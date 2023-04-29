@@ -17,7 +17,7 @@ class IntroHelper
         $this->registerStyles();
     }
 
-    public function display()
+    public function display(): void
     {
         $this->output->newLine();
         $this->writeInactiveBlock("<intro> {$this->text} </intro>", BlockSymbols::START);

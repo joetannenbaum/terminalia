@@ -6,7 +6,7 @@ trait IsCancelable
 {
     protected bool $canceled = false;
 
-    protected function writeCanceledBlock(string $text)
+    protected function writeCanceledBlock(string $text): void
     {
         $this->writeBlock('');
         $this->writeEndBlock("<canceled>{$text}</canceled>");

@@ -52,7 +52,7 @@ class InputListener
         return $this;
     }
 
-    public function listen()
+    public function listen(): void
     {
         $this->sttyMode = shell_exec('stty -g');
         $isStdin = 'php://stdin' === (stream_get_meta_data($this->inputStream)['uri'] ?? null);
@@ -82,7 +82,7 @@ class InputListener
         shell_exec('stty ' . $this->sttyMode);
     }
 
-    protected function run(string $toRun)
+    protected function run(string $toRun): void
     {
         $property = 'run' . ucwords($toRun);
 

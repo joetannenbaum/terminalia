@@ -8,41 +8,25 @@ trait WritesOutput
 {
     protected $lines = 0;
 
-    // TODO: Are these silly at this point? Just use tag
-    public function dim(string $text)
-    {
-        return "<unfocused>{$text}</unfocused>";
-    }
-
-    public function active(string $text)
-    {
-        return "<info>{$text}</info>";
-    }
-
-    public function warning(string $text)
-    {
-        return "<warning>{$text}</warning>";
-    }
-
-    protected function writeLine(string $text)
+    protected function writeLine(string $text): void
     {
         $this->output->writeln($text);
         $this->lines++;
     }
 
-    protected function moveCursorToStart()
+    protected function moveCursorToStart(): void
     {
         $this->cursor->moveUp($this->lines);
         $this->lines = 0;
     }
 
-    protected function clearCurrentOutput()
+    protected function clearCurrentOutput(): void
     {
         $this->moveCursorToStart();
         $this->cursor->clearOutput();
     }
 
-    protected function clearContentAfterQuestion()
+    protected function clearContentAfterQuestion(): void
     {
         if ($this->lines <= 2) {
             return;
@@ -53,7 +37,7 @@ trait WritesOutput
         $this->cursor->clearOutput();
     }
 
-    protected function hasError()
+    protected function hasError(): bool
     {
         return isset($this->errorMessage) && $this->errorMessage;
     }
@@ -61,18 +45,20 @@ trait WritesOutput
     protected function writeInactiveBlock(
         string $text,
         BlockSymbols $borderSymbol = BlockSymbols::LINE
-    ) {
-        $this->writeLine($this->dim($borderSymbol->value) . ' ' . $text);
+    ): void {
+        $this->writeLine(
+            $this->wrapInTag($borderSymbol->value, 'unfocused') . ' ' . $text
+        );
     }
 
-    protected function writeBlock(string $text = '', BlockSymbols $borderSymbol = BlockSymbols::LINE)
+    protected function writeBlock(string $text = '', BlockSymbols $borderSymbol = BlockSymbols::LINE): void
     {
         $tag = $this->getStyleTagForBlockLine();
 
         $this->writeLine("<{$tag}>{$borderSymbol->value}</{$tag}> {$text}");
     }
 
-    protected function getStyleTagForBlockLine()
+    protected function getStyleTagForBlockLine(): string
     {
         if ($this->canceled) {
             return 'unfocused';
@@ -85,46 +71,46 @@ trait WritesOutput
         return 'info';
     }
 
-    protected function getStyledSymbolForQuestionBlock()
+    protected function getStyledSymbolForQuestionBlock(): string
     {
         if ($this->canceled) {
-            return '<canceled>' . BlockSymbols::CANCELED->value . '</canceled>';
+            return $this->wrapInTag(BlockSymbols::CANCELED->value, 'canceled');
         }
 
         if ($this->hasError()) {
-            return $this->warning(BlockSymbols::WARNING->value);
+            return $this->wrapInTag(BlockSymbols::WARNING->value, 'warning');
         }
 
-        return $this->active(BlockSymbols::ACTIVE->value);
+        return $this->wrapInTag(BlockSymbols::ACTIVE->value, 'info');
     }
 
-    protected function writeEndBlock(string $text)
+    protected function writeEndBlock(string $text): void
     {
         $this->writeBlock($text, BlockSymbols::END);
     }
 
-    protected function writeQuestionBlock()
+    protected function writeQuestionBlock(): void
     {
-        $this->writeLine($this->dim(BlockSymbols::LINE->value));
+        $this->writeLine($this->wrapInTag(BlockSymbols::LINE->value, 'unfocused'));
 
         $symbol = $this->getStyledSymbolForQuestionBlock();
 
         $this->writeLine($symbol . ' ' . $this->question);
     }
 
-    protected function writeAnsweredBlock(string $answer)
+    protected function writeAnsweredBlock(string $answer): void
     {
-        $this->writeLine($this->dim(BlockSymbols::LINE->value . ' '));
-        $this->writeLine($this->active(BlockSymbols::ANSWERED->value) . ' ' . $this->question);
-        $this->writeLine($this->dim(BlockSymbols::LINE->value . ' ' . $answer));
+        $this->writeLine($this->wrapInTag(BlockSymbols::LINE->value, 'unfocused'));
+        $this->writeLine($this->wrapInTag(BlockSymbols::ANSWERED->value, 'info') . ' ' . $this->question);
+        $this->writeLine($this->wrapInTag(BlockSymbols::LINE->value . ' ' . $answer, 'unfocused'));
     }
 
-    protected function wrapInTag(string $text, string $tag)
+    protected function wrapInTag(string $text, string $tag): string
     {
         return "<{$tag}>{$text}</{$tag}>";
     }
 
-    protected function registerStyles()
+    protected function registerStyles(): void
     {
         collect([
             'focused'          => new OutputFormatterStyle('black', null, ['bold']),

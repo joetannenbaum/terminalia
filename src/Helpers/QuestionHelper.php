@@ -79,7 +79,7 @@ class QuestionHelper
         exit();
     }
 
-    protected function getAnswerDisplay()
+    protected function getAnswerDisplay(): string
     {
         if ($this->hidden) {
             return str_repeat('•', strlen($this->answer));
@@ -107,7 +107,7 @@ class QuestionHelper
         $listener->listen();
     }
 
-    protected function clearQuestion()
+    protected function clearQuestion(): void
     {
         $this->cursor->moveDown(2);
         $this->cursor->moveToColumn(0);
@@ -115,7 +115,7 @@ class QuestionHelper
         $this->clearCurrentOutput();
     }
 
-    protected function writeAnswer()
+    protected function writeAnswer(): void
     {
         $this->cursor->moveToColumn(3);
         $this->cursor->clearLineAfter();

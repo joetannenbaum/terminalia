@@ -4,7 +4,7 @@ namespace InteractiveConsole\Helpers;
 
 trait ListensForInput
 {
-    protected function inputListener()
+    protected function inputListener(): InputListener
     {
         return new InputListener($this->inputStream);
     }

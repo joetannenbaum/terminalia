@@ -43,7 +43,7 @@ class ChoicesHelper
         return $this;
     }
 
-    public function prompt()
+    public function prompt(): mixed
     {
         $this->cursor->hide();
 

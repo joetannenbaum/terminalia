@@ -24,7 +24,7 @@ class ConfirmHelper
         $this->registerStyles();
     }
 
-    public function prompt()
+    public function prompt(): bool
     {
         $this->cursor->hide();
 
@@ -43,7 +43,7 @@ class ConfirmHelper
         return $this->answer;
     }
 
-    public function onCancel(string $message = 'Cancel')
+    public function onCancel(string $message = 'Cancel'): void
     {
         $this->clearCurrentOutput();
         $this->writeQuestionBlock();
@@ -53,7 +53,7 @@ class ConfirmHelper
         exit();
     }
 
-    protected function registerListeners()
+    protected function registerListeners(): void
     {
         $listener = $this->inputListener();
 
@@ -70,7 +70,7 @@ class ConfirmHelper
         $listener->listen();
     }
 
-    protected function writeChoices()
+    protected function writeChoices(): void
     {
         $this->clearContentAfterQuestion();
 

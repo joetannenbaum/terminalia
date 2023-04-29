@@ -17,7 +17,7 @@ class OutroHelper
         $this->registerStyles();
     }
 
-    public function display()
+    public function display(): void
     {
         $this->writeInactiveBlock('');
         $this->writeInactiveBlock($this->text, BlockSymbols::END);
