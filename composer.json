@@ -1,0 +1,28 @@
+{
+    "name": "joetannenbaum/laravel-interactive-console",
+    "description": "A proof-of-concept for an interactive CLI script using Laravel",
+    "type": "library",
+    "require-dev": {
+        "tightenco/duster": "^2.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "InteractiveConsole\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Joe Tannenbaum",
+            "email": "joe@joe.codes"
+        }
+    ],
+    "require": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "InteractiveConsole\\Providers\\InteractiveConsoleServiceProvider"
+            ]
+        }
+    }
+}
