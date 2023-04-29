@@ -64,6 +64,11 @@ $confirmed = $this->interactiveConfirm(
 $this->outro("Thank you for your response! Have a great day.");
 ```
 
+<video class="video -2x " controls="" poster="https://brief.cleanshot.cloud/media/714/TS6olNSfzN0rMlMGMLoeXSW8Mc7bKLtFG3wqw4Eb.mp4?" controlslist="nodownload">
+    <source src="https://media.cleanshot.cloud/media/714/TS6olNSfzN0rMlMGMLoeXSW8Mc7bKLtFG3wqw4Eb.mp4?Expires=1682813964&amp;Signature=qYIYlCnXIfgmu5RSPnVVKxBBbqYbBuggcQ1rtBQiForjNLlWEW6AjgNvfpxfhNxZLtqYnEuFLyBmHKXIlzA6I18DbPF77QmlOuJHU1sKuad~n~E02Cbr0SgSlWVcKysBp3cbsVT3WppKiK2seGuxiIn~Ho4trUZggC~kMyc7GIO89pG1bBFOyPks8ZQYsHfVzgkFZlh8aj4fLMiUn69qnjJWa4OpCMF5kfeZR26oYM5cmEbRGEEQrutSCiZRe9CNIwGFUEJJdv4-hWpB9yyRFNHV459zvEuAvXoXcgjFYhq8B67GTkgeo2wUhazWAh5f~4kH9rjRinxiYKZggElY5A__&amp;Key-Pair-Id=K269JMAT9ZF4GZ" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+
 ## Input Validation
 
 The `validator` argument of these methods uses Laravel's built-in validator, so it accepts anything you are able to pass to `Validator::make`.
