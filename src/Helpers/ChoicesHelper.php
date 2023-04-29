@@ -10,8 +10,6 @@ class ChoicesHelper
 {
     use ListensForInput, WritesOutput, ValidatesInput, IsCancelable;
 
-    protected bool $filtering = false;
-
     protected string $query = '';
 
     protected Cursor $cursor;
@@ -21,8 +19,6 @@ class ChoicesHelper
     protected int $focusedIndex = 0;
 
     protected ?string $errorMessage = null;
-
-    protected bool $filterable = false;
 
     protected bool $multiple = false;
 
@@ -43,13 +39,6 @@ class ChoicesHelper
     public function setMultiple(bool $multiple = true): self
     {
         $this->multiple = $multiple;
-
-        return $this;
-    }
-
-    public function setFilterable(bool $filterable = true): self
-    {
-        $this->filterable = $filterable;
 
         return $this;
     }
@@ -109,11 +98,6 @@ class ChoicesHelper
 
         $listener->afterKeyPress($this->writeChoices(...));
 
-        $listener->on('/', function () {
-            $this->filtering = true;
-            $this->query = '';
-        });
-
         $listener->on([ControlSequence::UP, ControlSequence::LEFT], function () {
             $this->setRelativeFocusedIndex(-1);
         });
@@ -163,10 +147,6 @@ class ChoicesHelper
     {
         $this->clearContentAfterQuestion();
 
-        if ($this->filtering) {
-            $this->writeBlock($this->active(' >') . " {$this->query}");
-        }
-
         $this->items->each(function ($item, $i) {
             $tag = $this->focusedIndex === $i ? 'focused' : 'unfocused';
             $radioTag = $this->selected->contains($i) ? 'radio_selected' : 'radio_unselected';
@@ -179,13 +159,6 @@ class ChoicesHelper
 
             $this->writeBlock($this->wrapInTag($checked, $radioTag) . ' ' . $this->wrapInTag($item, $tag));
         });
-
-        if ($this->filterable) {
-            $this->writeBlock();
-            $this->writeBlock(
-                $this->wrapInTag('/', 'focused') . ' ' . $this->wrapInTag('filter', 'help_value')
-            );
-        }
 
         $this->writeEndBlock($this->errorMessage ?? '');
     }
