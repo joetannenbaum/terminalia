@@ -64,10 +64,7 @@ $confirmed = $this->interactiveConfirm(
 $this->outro("Thank you for your response! Have a great day.");
 ```
 
-<video class="video -2x " controls="" poster="https://brief.cleanshot.cloud/media/714/TS6olNSfzN0rMlMGMLoeXSW8Mc7bKLtFG3wqw4Eb.mp4?" controlslist="nodownload">
-    <source src="https://media.cleanshot.cloud/media/714/TS6olNSfzN0rMlMGMLoeXSW8Mc7bKLtFG3wqw4Eb.mp4?Expires=1682813964&amp;Signature=qYIYlCnXIfgmu5RSPnVVKxBBbqYbBuggcQ1rtBQiForjNLlWEW6AjgNvfpxfhNxZLtqYnEuFLyBmHKXIlzA6I18DbPF77QmlOuJHU1sKuad~n~E02Cbr0SgSlWVcKysBp3cbsVT3WppKiK2seGuxiIn~Ho4trUZggC~kMyc7GIO89pG1bBFOyPks8ZQYsHfVzgkFZlh8aj4fLMiUn69qnjJWa4OpCMF5kfeZR26oYM5cmEbRGEEQrutSCiZRe9CNIwGFUEJJdv4-hWpB9yyRFNHV459zvEuAvXoXcgjFYhq8B67GTkgeo2wUhazWAh5f~4kH9rjRinxiYKZggElY5A__&amp;Key-Pair-Id=K269JMAT9ZF4GZ" type="video/mp4">
-    Your browser does not support the video tag.
-</video>
+![Demo](https://media.cleanshot.cloud/media/714/5XAx8TAbSuXTC7qnj2uzNT0MU6lfwtRfLvkUpOGE.gif?Expires=1682814417&Signature=j3ZHDjn1QjcXXt1pKOJKy6Z4F53CTihxsIEfIiI7rmeVO1rT3IstL5T3DNagPIF7Kulzx753BLGA7BXOYI2MHtX4vmqr52cosUIHXRJzv3QcDq--lZOn3VoYjXi1DfD1MXXdhPeOs7II4PGYa-BWquzuG-pykL47JoWXDYdQm58wqfLi5IpFjuN1XYeZ~1iKQ7fYwtxIgEhtX7jPXZDro~ogHPBnkmyDEne2o40UO20RooixNHrKzDTL1E6lQXFJXQCGfThprHr36U~CBeAQ-LcOSUL1Sk126CKnWRtY7295JGQHQakooBoOCOXEwIZR3u6N0fSKHwDBWFaEC0qYVg__&Key-Pair-Id=K269JMAT9ZF4GZ)
 
 ## Input Validation
 
