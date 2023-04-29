@@ -67,3 +67,5 @@ $this->outro("Thank you for your response! Have a great day.");
 ## Input Validation
 
 The `validator` argument of these methods uses Laravel's built-in validator, so it accepts anything you are able to pass to `Validator::make`.
+
+**Note:** If you're using validation within a [Laravel Zero](https://laravel-zero.com) app, remember to register your `ValidationServiceProvider::class` and `TranslationServiceProvider::class` in your `config/app.php` file and also include a `lang` directory in your project root.
