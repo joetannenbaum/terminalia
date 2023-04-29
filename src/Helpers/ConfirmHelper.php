@@ -47,7 +47,7 @@ class ConfirmHelper
     {
         $this->clearCurrentOutput();
         $this->writeQuestionBlock();
-        $this->writeBlock($this->wrapInTag($this->answer ? 'Yes' : 'No', 'unfocused>'));
+        $this->writeBlock($this->wrapInTag($this->answer ? 'Yes' : 'No', 'unfocused'));
         $this->writeCanceledBlock($message);
 
         exit();
