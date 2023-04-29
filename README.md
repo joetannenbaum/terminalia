@@ -1,6 +1,10 @@
 # Laravel Interactive Console
 
-I challenged myself to re-create the user experience of the excellent [Clack](https://github.com/natemoo-re/clack) library within the Laravel console. This package is the result! Definitely not ready for production use, but it's a fun experiment and I encourage you to try it out if you feel so inclined.
+I challenged myself to re-create the user experience of the excellent [Clack](https://github.com/natemoo-re/clack) library within the Laravel console. This package is the result!
+
+Definitely not ready for production use, but it's a fun experiment and I encourage you to try it out if you feel so inclined.
+
+It's a WIP, so the API might change unexpectedly and I'll be adding features as I need them.
 
 ## Installation
 
@@ -59,3 +63,7 @@ $confirmed = $this->interactiveConfirm(
 
 $this->outro("Thank you for your response! Have a great day.");
 ```
+
+## Input Validation
+
+The `validator` argument of these methods uses Laravel's built-in validator, so it accepts anything you are able to pass to `Validator::make`.
