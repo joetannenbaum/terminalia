@@ -1,6 +1,6 @@
 <?php
 
-namespace InteractiveConsole\Helpers;
+namespace InteractiveConsole\Enums;
 
 enum TerminalEvent: string
 {

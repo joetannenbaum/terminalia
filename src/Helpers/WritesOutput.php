@@ -2,6 +2,7 @@
 
 namespace InteractiveConsole\Helpers;
 
+use InteractiveConsole\Enums\BlockSymbols;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 trait WritesOutput

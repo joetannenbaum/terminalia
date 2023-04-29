@@ -2,11 +2,12 @@
 
 namespace InteractiveConsole\Mixins;
 
-use InteractiveConsole\Helpers\ChoicesHelper;
-use InteractiveConsole\Helpers\ConfirmHelper;
-use InteractiveConsole\Helpers\IntroHelper;
-use InteractiveConsole\Helpers\OutroHelper;
-use InteractiveConsole\Helpers\QuestionHelper;
+use InteractiveConsole\PromptTypes\Choices;
+use InteractiveConsole\PromptTypes\Confirm;
+use InteractiveConsole\PromptTypes\Intro;
+use InteractiveConsole\PromptTypes\Outro;
+use InteractiveConsole\PromptTypes\Question;
+use InteractiveConsole\PromptTypes\Spinner;
 
 class InteractiveConsole
 {
@@ -20,11 +21,9 @@ class InteractiveConsole
             $validator = null,
             bool $filterable = false,
         ) {
-            $inputStream = fopen('php://stdin', 'rb');
 
-            $helper = new ChoicesHelper(
+            $helper = new Choices(
                 output: $this->output,
-                inputStream: $inputStream,
                 question: $question,
                 items: collect($items),
                 default: $default ?? [],
@@ -51,11 +50,9 @@ class InteractiveConsole
     public function interactiveConfirm()
     {
         return function (string $question, $default = false) {
-            $inputStream = fopen('php://stdin', 'rb');
 
-            $helper = new ConfirmHelper(
+            $helper = new Confirm(
                 output: $this->output,
-                inputStream: $inputStream,
                 question: $question,
                 default: $default,
             );
@@ -71,7 +68,7 @@ class InteractiveConsole
         return function (string $question, string $default = null, $validator = null, bool $hidden = false) {
             $inputStream = fopen('php://stdin', 'rb');
 
-            $helper = new QuestionHelper(
+            $helper = new Question(
                 output: $this->output,
                 inputStream: $inputStream,
                 question: $question,
@@ -89,17 +86,41 @@ class InteractiveConsole
         };
     }
 
+    public function spinner()
+    {
+        return function (
+            string $title,
+            callable $task,
+            string|callable $message = null,
+            string|callable $success = null,
+            array $longProcessMessages = []
+        ) {
+            $helper = new Spinner(
+                output: $this->output,
+                title: $title,
+                task: $task,
+                message: $message,
+                success: $success,
+                longProcessMessages: $longProcessMessages,
+            );
+
+            $this->trap(SIGINT, fn () => $helper->onCancel());
+
+            $helper->spin();
+        };
+    }
+
     public function intro()
     {
         return function (string $text) {
-            (new IntroHelper($this->output, $text))->display();
+            (new Intro($this->output, $text))->display();
         };
     }
 
     public function outro()
     {
         return function (string $text) {
-            (new OutroHelper($this->output, $text))->display();
+            (new Outro($this->output, $text))->display();
         };
     }
 }

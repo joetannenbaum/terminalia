@@ -1,11 +1,16 @@
 <?php
 
-namespace InteractiveConsole\Helpers;
+namespace InteractiveConsole\PromptTypes;
 
+use InteractiveConsole\Enums\ControlSequence;
+use InteractiveConsole\Helpers\IsCancelable;
+use InteractiveConsole\Helpers\ListensForInput;
+use InteractiveConsole\Helpers\ValidatesInput;
+use InteractiveConsole\Helpers\WritesOutput;
 use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Style\OutputStyle;
 
-class QuestionHelper
+class Question
 {
     use ListensForInput, WritesOutput, ValidatesInput, IsCancelable;
 

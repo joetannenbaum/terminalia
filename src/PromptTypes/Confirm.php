@@ -1,11 +1,16 @@
 <?php
 
-namespace InteractiveConsole\Helpers;
+namespace InteractiveConsole\PromptTypes;
 
+use InteractiveConsole\Enums\ControlSequence;
+use InteractiveConsole\Enums\TerminalEvent;
+use InteractiveConsole\Helpers\IsCancelable;
+use InteractiveConsole\Helpers\ListensForInput;
+use InteractiveConsole\Helpers\WritesOutput;
 use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Style\OutputStyle;
 
-class ConfirmHelper
+class Confirm
 {
     use ListensForInput, WritesOutput, IsCancelable;
 
@@ -15,10 +20,11 @@ class ConfirmHelper
 
     public function __construct(
         protected OutputStyle $output,
-        protected $inputStream,
         protected string $question,
+        protected $inputStream = null,
         protected bool $default = false,
     ) {
+        $this->inputStream = $this->inputStream ?? fopen('php://stdin', 'rb');
         $this->cursor = new Cursor($this->output, $this->inputStream);
         $this->answer = $default;
         $this->registerStyles();

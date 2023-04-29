@@ -1,10 +1,12 @@
 <?php
 
-namespace InteractiveConsole\Helpers;
+namespace InteractiveConsole\PromptTypes;
 
+use InteractiveConsole\Enums\BlockSymbols;
+use InteractiveConsole\Helpers\WritesOutput;
 use Symfony\Component\Console\Style\OutputStyle;
 
-class OutroHelper
+class Outro
 {
     use WritesOutput;
 

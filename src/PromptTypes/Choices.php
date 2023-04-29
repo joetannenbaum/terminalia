@@ -1,12 +1,18 @@
 <?php
 
-namespace InteractiveConsole\Helpers;
+namespace InteractiveConsole\PromptTypes;
 
 use Illuminate\Support\Collection;
+use InteractiveConsole\Enums\ControlSequence;
+use InteractiveConsole\Enums\TerminalEvent;
+use InteractiveConsole\Helpers\IsCancelable;
+use InteractiveConsole\Helpers\ListensForInput;
+use InteractiveConsole\Helpers\ValidatesInput;
+use InteractiveConsole\Helpers\WritesOutput;
 use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Style\OutputStyle;
 
-class ChoicesHelper
+class Choices
 {
     use ListensForInput, WritesOutput, ValidatesInput, IsCancelable;
 
@@ -26,11 +32,12 @@ class ChoicesHelper
 
     public function __construct(
         protected OutputStyle $output,
-        protected $inputStream,
         protected string $question,
         protected Collection $items,
+        protected $inputStream = null,
         protected string|array $default = [],
     ) {
+        $this->inputStream = $this->inputStream ?? fopen('php://stdin', 'rb');
         $this->cursor = new Cursor($this->output, $this->inputStream);
         $this->selected = collect(is_array($default) ? $default : [$default]);
         $this->registerStyles();

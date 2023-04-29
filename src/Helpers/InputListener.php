@@ -2,6 +2,9 @@
 
 namespace InteractiveConsole\Helpers;
 
+use InteractiveConsole\Enums\ControlSequence;
+use InteractiveConsole\Enums\TerminalEvent;
+
 class InputListener
 {
     protected $runOnExit;

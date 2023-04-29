@@ -17,7 +17,9 @@
             "email": "joe@joe.codes"
         }
     ],
-    "require": {},
+    "require": {
+        "spatie/fork": "^1.1"
+    },
     "extra": {
         "laravel": {
             "providers": [
