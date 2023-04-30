@@ -64,7 +64,7 @@ $confirmed = $this->interactiveConfirm(
 $this->outro("Thank you for your response! Have a great day.");
 ```
 
-![Demo](https://media.cleanshot.cloud/media/714/5XAx8TAbSuXTC7qnj2uzNT0MU6lfwtRfLvkUpOGE.gif?Expires=1682814417&Signature=j3ZHDjn1QjcXXt1pKOJKy6Z4F53CTihxsIEfIiI7rmeVO1rT3IstL5T3DNagPIF7Kulzx753BLGA7BXOYI2MHtX4vmqr52cosUIHXRJzv3QcDq--lZOn3VoYjXi1DfD1MXXdhPeOs7II4PGYa-BWquzuG-pykL47JoWXDYdQm58wqfLi5IpFjuN1XYeZ~1iKQ7fYwtxIgEhtX7jPXZDro~ogHPBnkmyDEne2o40UO20RooixNHrKzDTL1E6lQXFJXQCGfThprHr36U~CBeAQ-LcOSUL1Sk126CKnWRtY7295JGQHQakooBoOCOXEwIZR3u6N0fSKHwDBWFaEC0qYVg__&Key-Pair-Id=K269JMAT9ZF4GZ)
+![Demo](examples/full.gif)
 
 ## Input Validation
 
@@ -96,6 +96,8 @@ $site = $this->spinner(
 );
 ```
 
+![Demo](examples/spinner-simple.gif)
+
 Displays a variable message based on the result of the task:
 
 ```php
@@ -111,6 +113,8 @@ $site = $this->spinner(
     message: fn($result) => $result ? 'Site created!' : 'Error creating site.',
 );
 ```
+
+![Demo](examples/spinner-custom-message.gif)
 
 Updates user of progress as it works:
 
@@ -133,6 +137,8 @@ $site = $this->spinner(
 );
 ```
 
+![Demo](examples/spinner-update-messages.gif)
+
 Sends users encouraging messages while they wait:
 
 ```php
@@ -154,3 +160,5 @@ $site = $this->spinner(
     ],
 );
 ```
+
+![Demo](examples/spinner-long-processing-messages.gif)

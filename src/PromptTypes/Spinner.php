@@ -122,9 +122,9 @@ class Spinner
             $runningTime = 0;
             $runningTime = time() - $startTime;
 
-            $longProcessMessage = $message ?? $reversedLongProcessMessages->first(
+            $longProcessMessage = trim($message) ?: $reversedLongProcessMessages->first(
                 fn ($v, $k) => $runningTime >= $k
-            ) ?? '';
+            ) ?: '';
 
             $index = ($index === $animation->count() - 1) ? 0 : $index + 1;
 
