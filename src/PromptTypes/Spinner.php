@@ -2,12 +2,15 @@
 
 namespace InteractiveConsole\PromptTypes;
 
+use Bellows\Console\BlockSymbols;
+use Illuminate\Support\Str;
 use InteractiveConsole\Helpers\IsCancelable;
+use InteractiveConsole\Helpers\SpinnerMessenger;
 use InteractiveConsole\Helpers\WritesOutput;
-use Symfony\Component\Console\Cursor;
-use Symfony\Component\Console\Style\OutputStyle;
 use Spatie\Fork\Connection;
 use Spatie\Fork\Fork;
+use Symfony\Component\Console\Cursor;
+use Symfony\Component\Console\Style\OutputStyle;
 
 class Spinner
 {
@@ -15,13 +18,18 @@ class Spinner
 
     protected Cursor $cursor;
 
+    protected Connection $socketToSpinner;
+
+    protected Connection $socketToTask;
+
+    protected string $stopKey;
+
     public function __construct(
         protected OutputStyle $output,
         protected string $title,
         protected $task,
         protected $inputStream = null,
-        protected string|callable $message = null,
-        protected string|callable $success = null,
+        protected mixed $message = null,
         protected array $longProcessMessages = [],
     ) {
         $this->inputStream = $this->inputStream ?? fopen('php://stdin', 'rb');
@@ -29,101 +37,129 @@ class Spinner
         $this->registerStyles();
     }
 
-    public function spin(): void
+    public function spin(): mixed
     {
+        // Create a pair of socket connections so the two tasks can communicate
+        [$this->socketToTask, $this->socketToSpinner] = Connection::createPair();
+
+        $this->stopKey = Str::random();
+
         $this->cursor->hide();
 
-        // Create a pair of socket connections so the two tasks can communicate
-        [$socketToTask, $socketToSpinner] = Connection::createPair();
-
-        $result = app(Fork::class)
-            ->run(
-                function () use ($socketToSpinner) {
-                    $output = ($this->task)();
-
-                    $socketToSpinner->write(1);
-
-                    // Wait for the next cycle of the spinner so that it stops
-                    usleep(200_000);
-
-                    $display = '';
-
-                    if (is_callable($this->message)) {
-                        $display = ($this->message)($output);
-                    } elseif (is_string($this->message)) {
-                        $display = $this->message;
-                    } elseif (is_string($output)) {
-                        $display = $output;
-                    }
-
-                    if (is_callable($this->success)) {
-                        $wasSuccessful = ($this->success)($output);
-                    } elseif (is_bool($this->success)) {
-                        $wasSuccessful = $this->success;
-                    } else {
-                        // At this point we just assume things worked out
-                        $wasSuccessful = true;
-                    }
-
-                    $successIndicator = $wasSuccessful ? '✓' : '✗';
-
-                    $finalMessage = $display === '' || $display === null
-                        ? $this->wrapInTag($title, 'info')
-                        : $this->wrapInTag($title, 'info') . ' ' . $this->wrapInTag($display, 'comment');
-
-                    // $this->overwriteLine(
-                    //     "<comment>{$successIndicator}</comment> {$finalMessage}",
-                    //     true,
-                    // );
-
-                    return $output;
-                },
-                function () use ($socketToTask) {
-                    $animation = collect(['◒', '◐', '◓', '◑']);
-                    $startTime = time();
-
-                    $index = 0;
-
-                    $reversedLongProcessMessages = collect($this->longProcessMessages)
-                        ->reverse()
-                        ->map(fn ($v) => ': ' . $this->wrapInTag($v, 'comment'));
-
-                    $socketResults = '';
-
-                    while (!$socketResults) {
-                        foreach ($socketToTask->read() as $output) {
-                            $socketResults .= $output;
-                        }
-
-                        $runningTime = 0;
-                        $runningTime = time() - $startTime;
-
-                        $longProcessMessage = $reversedLongProcessMessages->first(
-                            fn ($v, $k) => $runningTime >= $k
-                        ) ?? '';
-
-                        $index = ($index === $animation->count() - 1) ? 0 : $index + 1;
-
-                        $this->overwriteLine(
-                            "<comment>{$animation->get($index)}</comment> <info>{$title}{$longProcessMessage}</info>"
-                        );
-
-                        usleep(200_000);
-                    }
-                }
-            );
+        $result = app(Fork::class)->run(
+            $this->runTask(...),
+            $this->showSpinner(...),
+        );
 
         $this->cursor->show();
 
-        $socketToSpinner->close();
-        $socketToTask->close();
+        $this->socketToSpinner->close();
+        $this->socketToTask->close();
 
         return $result[0];
     }
 
     public function onCancel($message = 'Cancel')
     {
+        $this->socketToSpinner->close();
+        $this->socketToTask->close();
         $this->writeCanceledBlock($message);
-        die();
+        exit();
+    }
+
+    protected function showSpinner()
+    {
+        $animation = collect(['◒', '◐', '◓', '◑']);
+        $startTime = time();
+
+        $index = 0;
+
+        $reversedLongProcessMessages = collect($this->longProcessMessages)->reverse();
+
+        $message = '';
+        $socketResults = '';
+
+        // Scaffold out the general layout of the spinner
+        $this->writeBlock('');
+        $this->writeBlock('');
+        $this->writeEndBlock('');
+
+        $this->cursor->moveUp(2);
+
+        while (Str::contains($socketResults, $this->stopKey) === false) {
+            foreach ($this->socketToTask->read() as $output) {
+                $socketResults .= $output;
+
+                if (!Str::contains($output, $this->stopKey)) {
+                    $message = $output;
+                }
+            }
+
+            $runningTime = 0;
+            $runningTime = time() - $startTime;
+
+            $longProcessMessage = $message ?? $reversedLongProcessMessages->first(
+                fn ($v, $k) => $runningTime >= $k
+            ) ?? '';
+
+            $index = ($index === $animation->count() - 1) ? 0 : $index + 1;
+
+            $this->cursor->moveToColumn(0);
+            $this->cursor->clearLine();
+
+            $this->output->write(
+                $this->wrapInTag($animation->get($index), 'spinner')
+                    . ' '
+                    . $this->title
+                    . Str::of($longProcessMessage)->whenNotEmpty(
+                        fn ($s) => ' ' . $this->wrapInTag($s, 'unfocused')
+                    ),
+            );
+
+            usleep(200_000);
+        }
+    }
+
+    protected function runTask()
+    {
+        $output = ($this->task)(new SpinnerMessenger($this->socketToSpinner));
+
+        $this->socketToSpinner->write($this->stopKey);
+
+        // Wait for the next cycle of the spinner so that it stops
+        usleep(200_000);
+
+        $this->cursor->moveToColumn(0);
+        $this->cursor->clearLine();
+        $this->cursor->moveUp();
+
+        $this->writeLine($this->wrapInTag(BlockSymbols::LINE->value, 'unfocused'));
+        $this->writeLine(
+            $this->wrapInTag(BlockSymbols::ANSWERED->value, 'info')
+                . ' '
+                . $this->wrapInTag(
+                    $this->getFinalDisplay($output),
+                    'unfocused'
+                )
+        );
+
+        return $output;
+    }
+
+    protected function getFinalDisplay($output)
+    {
+        if (is_callable($this->message)) {
+            return ($this->message)($output);
+        }
+
+        if (is_string($this->message)) {
+            return $this->message;
+        }
+
+        if (is_string($output)) {
+            return $output;
+        }
+
+        return $this->title;
     }
 }

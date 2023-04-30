@@ -92,7 +92,6 @@ class InteractiveConsole
             string $title,
             callable $task,
             string|callable $message = null,
-            string|callable $success = null,
             array $longProcessMessages = []
         ) {
             $helper = new Spinner(
@@ -100,7 +99,6 @@ class InteractiveConsole
                 title: $title,
                 task: $task,
                 message: $message,
-                success: $success,
                 longProcessMessages: $longProcessMessages,
             );
 

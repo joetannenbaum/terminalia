@@ -44,7 +44,7 @@ trait WritesOutput
     }
 
     protected function writeInactiveBlock(
-        string $text,
+        string $text = '',
         BlockSymbols $borderSymbol = BlockSymbols::LINE
     ): void {
         $this->writeLine(
@@ -123,12 +123,13 @@ trait WritesOutput
             'warning'          => 'yellow',
             'canceled'         => 'red',
             'intro'            => new OutputFormatterStyle('black', 'green'),
-        ])->each(function ($value, $key) {
-            $style = (is_string($value)) ? new OutputFormatterStyle($value) : $value;
+            'spinner'          => 'magenta',
+        ])
+            ->filter(fn ($value, $key) => !$this->output->getFormatter()->hasStyle($key))
+            ->each(function ($value, $key) {
+                $style = (is_string($value)) ? new OutputFormatterStyle($value) : $value;
 
-            if (!$this->output->getFormatter()->hasStyle($key)) {
                 $this->output->getFormatter()->setStyle($key, $style);
-            }
-        });
+            });
     }
 }
