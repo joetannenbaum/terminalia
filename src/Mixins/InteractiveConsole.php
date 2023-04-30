@@ -18,8 +18,7 @@ class InteractiveConsole
             array $items,
             $default = null,
             $multiple = false,
-            $validator = null,
-            bool $filterable = false,
+            $rules = null,
         ) {
 
             $helper = new Choices(
@@ -29,12 +28,8 @@ class InteractiveConsole
                 default: $default ?? [],
             );
 
-            if ($validator) {
-                $helper->setValidator($validator);
-            }
-
-            if ($filterable) {
-                $helper->setFilterable();
+            if ($rules) {
+                $helper->setRules($rules);
             }
 
             if ($multiple) {
@@ -65,7 +60,7 @@ class InteractiveConsole
 
     public function interactiveAsk()
     {
-        return function (string $question, string $default = null, $validator = null, bool $hidden = false) {
+        return function (string $question, string $default = null, $rules = null, bool $hidden = false) {
             $inputStream = fopen('php://stdin', 'rb');
 
             $helper = new Question(
@@ -76,8 +71,8 @@ class InteractiveConsole
                 hidden: $hidden,
             );
 
-            if ($validator) {
-                $helper->setValidator($validator);
+            if ($rules) {
+                $helper->setRules($rules);
             }
 
             $this->trap(SIGINT, fn () => $helper->onCancel());

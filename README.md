@@ -30,19 +30,19 @@ $this->intro("Welcome! Let's get started.");
 
 $bigAnswer = $this->interactiveAsk(
     question: 'The answer to the life, the universe, and everything is:',
-    validator: ['required', 'numeric'],
+    rules: ['required', 'numeric'],
 );
 
 $dontTell = $this->interactiveAsk(
     question: 'Tell me a secret:',
-    validator: ['required'],
+    rules: ['required'],
     hidden: true,
 );
 
 $seuss = $this->interactiveChoice(
     question: 'Pick a fish, any fish:',
     items: ['one fish', 'two fish', 'red fish', 'blue fish'],
-    validator: ['required'],
+    rules: ['required'],
 );
 
 $favoriteThings = $this->interactiveChoice(
@@ -54,7 +54,7 @@ $favoriteThings = $this->interactiveChoice(
         'warm woolen mittens',
     ],
     multiple: true,
-    validator: ['required'],
+    rules: ['required'],
 );
 
 $confirmed = $this->interactiveConfirm(
@@ -68,6 +68,6 @@ $this->outro("Thank you for your response! Have a great day.");
 
 ## Input Validation
 
-The `validator` argument of these methods uses Laravel's built-in validator, so it accepts anything you are able to pass to `Validator::make`.
+The `rules` argument of these methods uses Laravel's built-in validator, so it accepts anything you are able to pass to `Validator::make`.
 
 **Note:** If you're using validation within a [Laravel Zero](https://laravel-zero.com) app, remember to register your `ValidationServiceProvider::class` and `TranslationServiceProvider::class` in your `config/app.php` file and also include a `lang` directory in your project root.

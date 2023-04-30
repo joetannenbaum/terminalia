@@ -28,7 +28,7 @@ class Choices
 
     protected bool $multiple = false;
 
-    protected string|array $validator = [];
+    protected string|array $rules = [];
 
     public function __construct(
         protected OutputStyle $output,

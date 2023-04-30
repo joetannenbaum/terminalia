@@ -7,24 +7,26 @@ use Illuminate\Validation\ValidationException;
 
 trait ValidatesInput
 {
-    public function setValidator(string|array $validator): static
+    protected $rules;
+
+    public function setRules(string|array $rules): static
     {
-        $this->validator = $validator;
+        $this->rules = $rules;
 
         return $this;
     }
 
     protected function validate($value): ?string
     {
-        if (!isset($this->validator)) {
+        if (!isset($this->rules)) {
             return null;
         }
 
-        if ($this->validator) {
+        if ($this->rules) {
             try {
                 Validator::make(
                     ['value' => $value],
-                    ['value' => $this->validator],
+                    ['value' => $this->rules],
                 )->validate();
             } catch (ValidationException $e) {
                 return $e->getMessage();
