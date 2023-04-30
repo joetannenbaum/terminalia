@@ -28,8 +28,6 @@ class Choices
 
     protected bool $multiple = false;
 
-    protected string|array $rules = [];
-
     public function __construct(
         protected OutputStyle $output,
         protected string $question,
@@ -96,7 +94,7 @@ class Choices
 
         $this->writeCanceledBlock($message);
 
-        exit();
+        exit;
     }
 
     protected function registerListeners()

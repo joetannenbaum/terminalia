@@ -81,7 +81,7 @@ class Question
 
         $this->writeCanceledBlock($message);
 
-        exit();
+        exit;
     }
 
     protected function getAnswerDisplay(): string

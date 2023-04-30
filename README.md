@@ -71,3 +71,86 @@ $this->outro("Thank you for your response! Have a great day.");
 The `rules` argument of these methods uses Laravel's built-in validator, so it accepts anything you are able to pass to `Validator::make`.
 
 **Note:** If you're using validation within a [Laravel Zero](https://laravel-zero.com) app, remember to register your `ValidationServiceProvider::class` and `TranslationServiceProvider::class` in your `config/app.php` file and also include a `lang` directory in your project root.
+
+## Spinner
+
+The `spinner` method allows you to show a spinner while an indefinite process is running. It allows customization to you can inform your user of what's happening as the process runs. The result of the spinner will be whatever is returned from the `task` argument.
+
+It's important to note that the `task` runs in a forked process, so the task itself shouldn't create any side effects in your application. It should just process something and return a result.
+
+### Examples
+
+Simple:
+
+```php
+$site = $this->spinner(
+    title: 'Creating site...',
+    task: function () {
+        // Do something here that takes a little while
+        $site = Site::create();
+        $site->deploy();
+
+        return $site;
+    },
+    message: 'Site created!',
+);
+```
+
+Displays a variable message based on the result of the task:
+
+```php
+$site = $this->spinner(
+    title: 'Creating site...',
+    task: function () {
+        // Do something here that takes a little while
+        $site = Site::create();
+        $site->deploy();
+
+        return $site->wasDeployed;
+    },
+    message: fn($result) => $result ? 'Site created!' : 'Error creating site.',
+);
+```
+
+Updates user of progress as it works:
+
+```php
+$site = $this->spinner(
+    title: 'Creating site...',
+    task: function (SpinnerMessenger $messenger) {
+        // Do something here that takes a little while
+        $site = Site::create();
+
+        $messenger->send('Site created, deploying');
+        $site->deploy();
+
+        $messenger->send('Verifying deployment');
+        $site->verifyDeployment();
+
+        return $site->wasDeployed;
+    },
+    message: fn($result) => $result ? 'Site created!' : 'Error creating site.',
+);
+```
+
+Sends users encouraging messages while they wait:
+
+```php
+$site = $this->spinner(
+    title: 'Creating site...',
+    task: function () {
+        // Do something here that takes a little while
+        $site = Site::create();
+        $site->deploy();
+        $site->verifyDeployment();
+
+        return $site->wasDeployed;
+    },
+    // seconds => message
+    longProcessMessages: [
+        3  => 'One moment',
+        7  => 'Almost done',
+        11 => 'Wrapping up',
+    ],
+);
+```

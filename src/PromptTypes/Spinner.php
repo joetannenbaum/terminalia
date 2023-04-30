@@ -16,11 +16,15 @@ class Spinner
 {
     use WritesOutput, IsCancelable;
 
+    protected const SLEEP_TIME = 200_000;
+
     protected Cursor $cursor;
 
     protected Connection $socketToSpinner;
 
     protected Connection $socketToTask;
+
+    protected bool $isChildProcess = false;
 
     protected string $stopKey;
 
@@ -59,16 +63,36 @@ class Spinner
         return $result[0];
     }
 
-    public function onCancel($message = 'Cancel')
+    public function onCancel(string $message = 'Canceled'): void
     {
+        if ($this->isChildProcess) {
+            exit;
+        }
+
+        $this->canceled = true;
+
         $this->socketToSpinner->close();
         $this->socketToTask->close();
+
+        $this->cursor->moveToColumn(0);
+        $this->cursor->clearLine();
+        $this->cursor->moveUp();
+        $this->writeBlock('');
+
+        $this->writeLine(
+            $this->getStyledSymbolForQuestionBlock() . ' ' .
+                $this->wrapInTag($this->title, 'unfocused'),
+        );
+
         $this->writeCanceledBlock($message);
-        exit();
+
+        exit;
     }
 
-    protected function showSpinner()
+    protected function showSpinner(): void
     {
+        $this->isChildProcess = true;
+
         $animation = collect(['◒', '◐', '◓', '◑']);
         $startTime = time();
 
@@ -116,18 +140,20 @@ class Spinner
                     ),
             );
 
-            usleep(200_000);
+            usleep(self::SLEEP_TIME);
         }
     }
 
-    protected function runTask()
+    protected function runTask(): mixed
     {
+        $this->isChildProcess = true;
+
         $output = ($this->task)(new SpinnerMessenger($this->socketToSpinner));
 
         $this->socketToSpinner->write($this->stopKey);
 
         // Wait for the next cycle of the spinner so that it stops
-        usleep(200_000);
+        usleep(self::SLEEP_TIME);
 
         $this->cursor->moveToColumn(0);
         $this->cursor->clearLine();
@@ -146,7 +172,7 @@ class Spinner
         return $output;
     }
 
-    protected function getFinalDisplay($output)
+    protected function getFinalDisplay($output): string
     {
         if (is_callable($this->message)) {
             return ($this->message)($output);

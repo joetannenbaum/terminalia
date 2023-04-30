@@ -49,14 +49,16 @@ class Confirm
         return $this->answer;
     }
 
-    public function onCancel(string $message = 'Cancel'): void
+    public function onCancel(string $message = 'Canceled'): void
     {
+        $this->canceled = true;
+
         $this->clearCurrentOutput();
         $this->writeQuestionBlock();
         $this->writeBlock($this->wrapInTag($this->answer ? 'Yes' : 'No', 'unfocused'));
         $this->writeCanceledBlock($message);
 
-        exit();
+        exit;
     }
 
     protected function registerListeners(): void

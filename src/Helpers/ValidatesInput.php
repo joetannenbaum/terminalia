@@ -7,7 +7,7 @@ use Illuminate\Validation\ValidationException;
 
 trait ValidatesInput
 {
-    protected $rules;
+    protected string|array $rules = [];
 
     public function setRules(string|array $rules): static
     {
