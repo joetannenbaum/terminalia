@@ -2,8 +2,8 @@
 
 namespace InteractiveConsole\PromptTypes;
 
-use Bellows\Console\BlockSymbols;
 use Illuminate\Support\Str;
+use InteractiveConsole\Enums\BlockSymbols;
 use InteractiveConsole\Helpers\IsCancelable;
 use InteractiveConsole\Helpers\SpinnerMessenger;
 use InteractiveConsole\Helpers\WritesOutput;
