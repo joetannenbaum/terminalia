@@ -7,6 +7,7 @@ use InteractiveConsole\PromptTypes\Confirm;
 use InteractiveConsole\PromptTypes\Intro;
 use InteractiveConsole\PromptTypes\Note;
 use InteractiveConsole\PromptTypes\Outro;
+use InteractiveConsole\PromptTypes\ProgressBar;
 use InteractiveConsole\PromptTypes\Question;
 use InteractiveConsole\PromptTypes\Spinner;
 
@@ -101,6 +102,44 @@ class InteractiveConsole
             $this->trap(SIGINT, fn () => $helper->onCancel());
 
             $helper->spin();
+        };
+    }
+
+    public function withInteractiveProgressBar()
+    {
+        return function (
+            iterable $items,
+            callable $callback,
+            ?string $title = null,
+        ) {
+            $progress = $this->createInteractiveProgressBar(count($items), $title);
+
+            $progress->start();
+
+            foreach ($items as $item) {
+                $callback($item);
+                $progress->advance();
+            }
+
+            $progress->finish();
+        };
+    }
+
+    public function createInteractiveProgressBar()
+    {
+        return function (
+            int $total,
+            ?string $title = null,
+        ) {
+            $helper = new ProgressBar(
+                output: $this->output,
+                total: $total,
+                title: $title,
+            );
+
+            $this->trap(SIGINT, fn () => $helper->onCancel());
+
+            return $helper;
         };
     }
 
