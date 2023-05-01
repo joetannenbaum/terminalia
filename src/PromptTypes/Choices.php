@@ -7,18 +7,16 @@ use InteractiveConsole\Enums\ControlSequence;
 use InteractiveConsole\Enums\TerminalEvent;
 use InteractiveConsole\Helpers\IsCancelable;
 use InteractiveConsole\Helpers\ListensForInput;
+use InteractiveConsole\Helpers\UsesTheCursor;
 use InteractiveConsole\Helpers\ValidatesInput;
 use InteractiveConsole\Helpers\WritesOutput;
-use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Style\OutputStyle;
 
 class Choices
 {
-    use ListensForInput, WritesOutput, ValidatesInput, IsCancelable;
+    use ListensForInput, WritesOutput, ValidatesInput, IsCancelable, UsesTheCursor;
 
     protected string $query = '';
-
-    protected Cursor $cursor;
 
     protected Collection $selected;
 
@@ -32,11 +30,11 @@ class Choices
         protected OutputStyle $output,
         protected string $question,
         protected Collection $items,
-        protected $inputStream = null,
         protected string|array $default = [],
+        protected $inputStream = null,
     ) {
         $this->inputStream = $this->inputStream ?? fopen('php://stdin', 'rb');
-        $this->cursor = new Cursor($this->output, $this->inputStream);
+        $this->initCursor();
         $this->selected = collect(is_array($default) ? $default : [$default]);
         $this->registerStyles();
     }

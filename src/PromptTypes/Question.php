@@ -5,16 +5,14 @@ namespace InteractiveConsole\PromptTypes;
 use InteractiveConsole\Enums\ControlSequence;
 use InteractiveConsole\Helpers\IsCancelable;
 use InteractiveConsole\Helpers\ListensForInput;
+use InteractiveConsole\Helpers\UsesTheCursor;
 use InteractiveConsole\Helpers\ValidatesInput;
 use InteractiveConsole\Helpers\WritesOutput;
-use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Style\OutputStyle;
 
 class Question
 {
-    use ListensForInput, WritesOutput, ValidatesInput, IsCancelable;
-
-    protected Cursor $cursor;
+    use ListensForInput, WritesOutput, ValidatesInput, IsCancelable, UsesTheCursor;
 
     protected ?string $errorMessage = null;
 
@@ -22,12 +20,13 @@ class Question
 
     public function __construct(
         protected OutputStyle $output,
-        protected $inputStream,
         protected string $question,
         protected ?string $default = null,
         protected bool $hidden = false,
+        protected $inputStream = null,
     ) {
-        $this->cursor = new Cursor($this->output, $this->inputStream);
+        $this->inputStream = $this->inputStream ?? fopen('php://stdin', 'rb');
+        $this->initCursor();
         $this->registerStyles();
 
         if ($default !== null) {

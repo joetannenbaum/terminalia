@@ -6,26 +6,24 @@ use InteractiveConsole\Enums\ControlSequence;
 use InteractiveConsole\Enums\TerminalEvent;
 use InteractiveConsole\Helpers\IsCancelable;
 use InteractiveConsole\Helpers\ListensForInput;
+use InteractiveConsole\Helpers\UsesTheCursor;
 use InteractiveConsole\Helpers\WritesOutput;
-use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Style\OutputStyle;
 
 class Confirm
 {
-    use ListensForInput, WritesOutput, IsCancelable;
-
-    protected Cursor $cursor;
+    use ListensForInput, WritesOutput, IsCancelable, UsesTheCursor;
 
     protected bool $answer;
 
     public function __construct(
         protected OutputStyle $output,
         protected string $question,
-        protected $inputStream = null,
         protected bool $default = false,
+        protected $inputStream = null,
     ) {
         $this->inputStream = $this->inputStream ?? fopen('php://stdin', 'rb');
-        $this->cursor = new Cursor($this->output, $this->inputStream);
+        $this->initCursor();
         $this->answer = $default;
         $this->registerStyles();
     }

@@ -6,19 +6,17 @@ use Illuminate\Support\Str;
 use InteractiveConsole\Enums\BlockSymbols;
 use InteractiveConsole\Helpers\IsCancelable;
 use InteractiveConsole\Helpers\SpinnerMessenger;
+use InteractiveConsole\Helpers\UsesTheCursor;
 use InteractiveConsole\Helpers\WritesOutput;
 use Spatie\Fork\Connection;
 use Spatie\Fork\Fork;
-use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Style\OutputStyle;
 
 class Spinner
 {
-    use WritesOutput, IsCancelable;
+    use WritesOutput, IsCancelable, UsesTheCursor;
 
     protected const SLEEP_TIME = 200_000;
-
-    protected Cursor $cursor;
 
     protected Connection $socketToSpinner;
 
@@ -32,12 +30,12 @@ class Spinner
         protected OutputStyle $output,
         protected string $title,
         protected $task,
-        protected $inputStream = null,
         protected mixed $message = null,
         protected array $longProcessMessages = [],
+        protected $inputStream = null,
     ) {
         $this->inputStream = $this->inputStream ?? fopen('php://stdin', 'rb');
-        $this->cursor = new Cursor($this->output, $this->inputStream);
+        $this->initCursor();
         $this->registerStyles();
     }
 
