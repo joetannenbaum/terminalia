@@ -11,4 +11,8 @@ enum BlockSymbols: string
     case ACTIVE = '◆';
     case WARNING = '▲';
     case CANCELED = '■';
+    case HORIZONTAL = '─';
+    case CORNER_TOP_RIGHT = '╮';
+    case CORNER_BOTTOM_RIGHT = '╯';
+    case CONNECT_LEFT = '├';
 }

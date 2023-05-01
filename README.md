@@ -39,6 +39,20 @@ $dontTell = $this->interactiveAsk(
     hidden: true,
 );
 
+$spun = $this->spinner(
+    title: 'Processing',
+    task: function (SpinnerMessenger $messenger) {
+        sleep(2);
+        $messenger->send("Still cookin'");
+        sleep(2);
+        $messenger->send('Almost there');
+        sleep(2);
+
+        return null;
+    },
+    message: 'Secret has been processed!'
+);
+
 $seuss = $this->interactiveChoice(
     question: 'Pick a fish, any fish:',
     items: ['one fish', 'two fish', 'red fish', 'blue fish'],
@@ -61,10 +75,15 @@ $confirmed = $this->interactiveConfirm(
     question: 'Everything look good?',
 );
 
+$this->note(
+    'You really did it. We are so proud of you. Thank you for telling us all about yourself. We can\'t wait to get to know you better.',
+    'Congratulations',
+);
+
 $this->outro("Thank you for your response! Have a great day.");
 ```
 
-![Demo](examples/full.gif)
+![Demo](examples/full-v2.gif)
 
 ## Input Validation
 
@@ -162,3 +181,32 @@ $site = $this->spinner(
 ```
 
 ![Demo](examples/spinner-long-processing-messages.gif)
+
+## Note
+
+The `note` method allows you to display a message to the user. You can include an optional title as the second argument, and if you have multiple lines you can pass in an array of strings as the first argument.
+
+```php
+// Regular note
+$this->note(
+    "You really did it. We are so proud of you. Thank you for telling us all about yourself. We can't wait to get to know you better.",
+    'Congratulations',
+);
+
+// Multiple lines via an array
+$this->note(
+    [
+        'You really did it. We are so proud of you. Thank you for telling us all about yourself.',
+        "We can't wait to get to know you better."
+    ],
+    'Congratulations',
+);
+
+// No title
+$this->note(
+    [
+        'You really did it. We are so proud of you. Thank you for telling us all about yourself.',
+        "We can't wait to get to know you better."
+    ],
+);
+```

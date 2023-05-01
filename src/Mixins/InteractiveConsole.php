@@ -5,6 +5,7 @@ namespace InteractiveConsole\Mixins;
 use InteractiveConsole\PromptTypes\Choices;
 use InteractiveConsole\PromptTypes\Confirm;
 use InteractiveConsole\PromptTypes\Intro;
+use InteractiveConsole\PromptTypes\Note;
 use InteractiveConsole\PromptTypes\Outro;
 use InteractiveConsole\PromptTypes\Question;
 use InteractiveConsole\PromptTypes\Spinner;
@@ -100,6 +101,13 @@ class InteractiveConsole
             $this->trap(SIGINT, fn () => $helper->onCancel());
 
             $helper->spin();
+        };
+    }
+
+    public function note()
+    {
+        return function (string|array $text, string $title = '') {
+            (new Note($this->output, $text, $title))->display();
         };
     }
 

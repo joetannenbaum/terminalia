@@ -61,7 +61,7 @@ trait WritesOutput
 
     protected function getStyleTagForBlockLine(): string
     {
-        if ($this->canceled) {
+        if ($this->canceled ?? false) {
             return 'unfocused';
         }
 
