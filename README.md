@@ -6,6 +6,8 @@ Definitely not ready for production use, but it's a fun experiment and I encoura
 
 It's a WIP, so the API might change unexpectedly and I'll be adding features as I need them.
 
+![Demo](examples/full-v2.gif)
+
 ## Installation
 
 ```bash
