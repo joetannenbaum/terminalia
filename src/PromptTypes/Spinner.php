@@ -153,7 +153,7 @@ class Spinner
         $this->socketToSpinner->write($this->stopKey);
 
         // Wait for the next cycle of the spinner so that it stops
-        usleep(self::SLEEP_TIME);
+        usleep(self::SLEEP_TIME * 2);
 
         $this->cursor->moveToColumn(0);
         $this->cursor->clearLine();
