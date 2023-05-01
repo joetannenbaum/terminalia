@@ -182,6 +182,42 @@ $site = $this->spinner(
 
 ![Demo](examples/spinner-long-processing-messages.gif)
 
+## Progress Bars
+
+Progress bars have a very similar API to [Laravel console progress bars](https://laravel.com/docs/artisan#progress-bars), with one small addition: You can pass in an optional title for the bar.
+
+```php
+$this->withInteractiveProgressBar(collect(range(1, 20)), function () {
+    usleep(300_000);
+}, 'Progress is being made...');
+```
+
+![Demo](examples/progress-with-title.gif)
+
+```php
+$items = range(1, 10);
+$progress = $this->createInteractiveProgressBar(count($items), 'Updating users...');
+
+$progress->start();
+
+foreach ($items as $item) {
+    $progress->advance();
+    usleep(300_000);
+}
+
+$progress->finish();
+```
+
+![Demo](examples/progress-with-title-manual.gif)
+
+```php
+$this->withInteractiveProgressBar(collect(range(1, 20)), function () {
+    usleep(300_000);
+});
+```
+
+![Demo](examples/progress-without-title.gif)
+
 ## Note
 
 The `note` method allows you to display a message to the user. You can include an optional title as the second argument, and if you have multiple lines you can pass in an array of strings as the first argument.
