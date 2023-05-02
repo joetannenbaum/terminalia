@@ -48,7 +48,7 @@ trait WritesOutput
         BlockSymbols $borderSymbol = BlockSymbols::LINE
     ): void {
         $this->writeLine(
-            $this->wrapInTag($borderSymbol->value, 'unfocused') . ' ' . $text
+            $this->dim($borderSymbol->symbol()) . ' ' . $text
         );
     }
 
@@ -56,13 +56,13 @@ trait WritesOutput
     {
         $tag = $this->getStyleTagForBlockLine();
 
-        $this->writeLine("<{$tag}>{$borderSymbol->value}</{$tag}> {$text}");
+        $this->writeLine("<{$tag}>{$borderSymbol->symbol()}</{$tag}> {$text}");
     }
 
     protected function getStyleTagForBlockLine(): string
     {
         if ($this->canceled ?? false) {
-            return 'unfocused';
+            return 'dim';
         }
 
         if ($this->hasError()) {
@@ -75,14 +75,14 @@ trait WritesOutput
     protected function getStyledSymbolForQuestionBlock(): string
     {
         if ($this->canceled) {
-            return $this->wrapInTag(BlockSymbols::CANCELED->value, 'canceled');
+            return $this->canceled(BlockSymbols::CANCELED->symbol());
         }
 
         if ($this->hasError()) {
-            return $this->wrapInTag(BlockSymbols::WARNING->value, 'warning');
+            return $this->warning(BlockSymbols::WARNING->symbol());
         }
 
-        return $this->wrapInTag(BlockSymbols::ACTIVE->value, 'info');
+        return $this->active(BlockSymbols::ACTIVE->symbol());
     }
 
     protected function writeEndBlock(string $text): void
@@ -92,36 +92,31 @@ trait WritesOutput
 
     protected function writeTitleBlock(string $text): void
     {
-        $this->writeLine($this->wrapInTag(BlockSymbols::LINE->value, 'unfocused'));
+        $this->writeLine($this->dim(BlockSymbols::LINE->symbol()));
 
         $this->writeLine($this->getStyledSymbolForQuestionBlock() . ' ' . $text);
     }
 
     protected function writeAnsweredBlock(string $answer): void
     {
-        $this->writeLine($this->wrapInTag(BlockSymbols::LINE->value, 'unfocused'));
-        $this->writeLine($this->wrapInTag(BlockSymbols::ANSWERED->value, 'info') . ' ' . $this->question);
-        $this->writeLine($this->wrapInTag(BlockSymbols::LINE->value . ' ' . $answer, 'unfocused'));
-    }
-
-    protected function wrapInTag(string $text, string $tag): string
-    {
-        return "<{$tag}>{$text}</{$tag}>";
+        $this->writeLine($this->dim(BlockSymbols::LINE->symbol()));
+        $this->writeLine($this->active(BlockSymbols::ANSWERED->symbol()) . ' ' . $this->question);
+        $this->writeLine($this->dim(BlockSymbols::LINE->symbol() . ' ' . $answer));
     }
 
     protected function registerStyles(): void
     {
         collect([
-            'focused'          => new OutputFormatterStyle('black', null, ['bold']),
-            'unfocused'        => 'gray',
-            'radio_selected'   => 'green',
-            'radio_unselected' => 'gray',
-            'help_key'         => 'white',
-            'help_value'       => 'gray',
-            'warning'          => 'yellow',
-            'canceled'         => 'red',
-            'intro'            => new OutputFormatterStyle('black', 'green'),
-            'spinner'          => 'magenta',
+            'focused'             => new OutputFormatterStyle('black', null, ['bold']),
+            'dim'                 => 'gray',
+            'checkbox_selected'   => 'green',
+            'checkbox_unselected' => 'gray',
+            'help_key'            => 'white',
+            'help_value'          => 'gray',
+            'warning'             => 'yellow',
+            'canceled'            => 'red',
+            'intro'               => new OutputFormatterStyle('black', 'green'),
+            'pending'             => 'magenta',
         ])
             ->filter(fn ($value, $key) => !$this->output->getFormatter()->hasStyle($key))
             ->each(function ($value, $key) {
@@ -129,5 +124,65 @@ trait WritesOutput
 
                 $this->output->getFormatter()->setStyle($key, $style);
             });
+    }
+
+    protected function wrapInTag(string $text, string $tag): string
+    {
+        return "<{$tag}>{$text}</{$tag}>";
+    }
+
+    protected function keyboardShortcutHelp(string $key, string $value): string
+    {
+        return $this->helpKey($key) . ' ' . $this->helpValue($value);
+    }
+
+    protected function helpKey(string $text): string
+    {
+        return $this->wrapInTag($text, 'help_key');
+    }
+
+    protected function helpValue(string $text): string
+    {
+        return $this->wrapInTag($text, 'help_value');
+    }
+
+    protected function active(string $text): string
+    {
+        return $this->wrapInTag($text, 'info');
+    }
+
+    protected function dim(string $text): string
+    {
+        return $this->wrapInTag($text, 'dim');
+    }
+
+    protected function focused(string $text): string
+    {
+        return $this->wrapInTag($text, 'focused');
+    }
+
+    protected function checkboxSelected(string $text): string
+    {
+        return $this->wrapInTag($text, 'checkbox_selected');
+    }
+
+    protected function checkboxUnselected(string $text): string
+    {
+        return $this->wrapInTag($text, 'checkbox_unselected');
+    }
+
+    protected function canceled(string $text): string
+    {
+        return $this->wrapInTag($text, 'canceled');
+    }
+
+    protected function warning(string $text): string
+    {
+        return $this->wrapInTag($text, 'warning');
+    }
+
+    protected function pending(string $text): string
+    {
+        return $this->wrapInTag($text, 'pending');
     }
 }

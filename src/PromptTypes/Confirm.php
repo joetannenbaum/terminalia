@@ -2,6 +2,7 @@
 
 namespace InteractiveConsole\PromptTypes;
 
+use InteractiveConsole\Enums\BlockSymbols;
 use InteractiveConsole\Enums\ControlSequence;
 use InteractiveConsole\Enums\TerminalEvent;
 use InteractiveConsole\Helpers\IsCancelable;
@@ -53,7 +54,7 @@ class Confirm
 
         $this->clearCurrentOutput();
         $this->writeTitleBlock($this->question);
-        $this->writeBlock($this->wrapInTag($this->answer ? 'Yes' : 'No', 'unfocused'));
+        $this->writeBlock($this->dim($this->answer ? 'Yes' : 'No'));
         $this->writeCanceledBlock($message);
 
         exit;
@@ -83,11 +84,11 @@ class Confirm
         $index = $this->answer ? 0 : 1;
 
         $result = collect(['Yes', 'No'])->map(function ($item, $i) use ($index) {
-            $tag = $index === $i ? 'focused' : 'unfocused';
-            $radioTag = $index === $i ? 'radio_selected' : 'radio_unselected';
-            $checked = $index === $i ? '●' : '○';
+            if ($index === $i) {
+                return $this->checkboxSelected(BlockSymbols::RADIO_SELECTED->symbol()) . ' ' . $this->focused($item);
+            }
 
-            return $this->wrapInTag($checked, $radioTag) . ' ' . $this->wrapInTag($item, $tag);
+            return $this->checkboxUnselected(BlockSymbols::RADIO_UNSELECTED->symbol()) . ' ' . $this->dim($item);
         });
 
         $this->writeBlock($result->join(' / '));

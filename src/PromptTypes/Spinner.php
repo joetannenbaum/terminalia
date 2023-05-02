@@ -78,7 +78,7 @@ class Spinner
         $this->writeBlock('');
 
         $this->writeTitleBlock(
-            $this->wrapInTag($this->title, 'unfocused')
+            $this->dim($this->title)
         );
 
         $this->writeCanceledBlock($message);
@@ -101,7 +101,7 @@ class Spinner
         $socketResults = '';
 
         // Scaffold out the general layout of the spinner
-        $this->writeBlock('');
+        $this->writeInactiveBlock('');
         $this->writeBlock('');
         $this->writeEndBlock('');
 
@@ -127,11 +127,11 @@ class Spinner
             $this->cursor->clearLine();
 
             $this->output->write(
-                $this->wrapInTag($animation->loop($index++), 'spinner')
+                $this->pending($animation->loop($index++))
                     . ' '
                     . $this->title
                     . Str::of($longProcessMessage)->whenNotEmpty(
-                        fn ($s) => ' ' . $this->wrapInTag($s, 'unfocused')
+                        fn ($s) => ' ' . $this->dim($s)
                     ),
             );
 
@@ -154,13 +154,13 @@ class Spinner
         $this->cursor->clearLine();
         $this->cursor->moveUp();
 
-        $this->writeLine($this->wrapInTag(BlockSymbols::LINE->value, 'unfocused'));
+        // TODO: This feels like a title block? Answered flag maybe?
+        $this->writeLine($this->dim(BlockSymbols::LINE->symbol()));
         $this->writeLine(
-            $this->wrapInTag(BlockSymbols::ANSWERED->value, 'info')
+            $this->active(BlockSymbols::ANSWERED->symbol())
                 . ' '
-                . $this->wrapInTag(
+                . $this->dim(
                     $this->getFinalDisplay($output),
-                    'unfocused'
                 )
         );
 

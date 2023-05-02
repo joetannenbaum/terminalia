@@ -84,7 +84,7 @@ class ProgressBar
         $this->writeInactiveBlock();
 
         $this->writeTitleBlock(
-            $this->wrapInTag($this->title ?? '', 'unfocused'),
+            $this->dim($this->title ?? ''),
         );
 
         if ($this->title) {
@@ -116,8 +116,8 @@ class ProgressBar
 
         $this->output->write(
             ($percentageFilled > 0 ? str_repeat(self::BAR_CHARACTER, $percentageFilled) : '')
-                . ($percentageEmpty > 0 ? $this->wrapInTag(str_repeat(self::EMPTY_BAR_CHARACTER, $percentageEmpty), 'unfocused') : '')
-                . $this->wrapInTag(" {$percentage}% ({$this->current}/{$this->total})", 'unfocused'),
+                . ($percentageEmpty > 0 ? $this->dim(str_repeat(self::EMPTY_BAR_CHARACTER, $percentageEmpty)) : '')
+                . $this->dim(" {$percentage}% ({$this->current}/{$this->total})"),
         );
     }
 }

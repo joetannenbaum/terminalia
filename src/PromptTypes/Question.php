@@ -74,7 +74,7 @@ class Question
 
         if ($this->getAnswerDisplay() !== '') {
             $this->writeBlock(
-                $this->wrapInTag($this->getAnswerDisplay(), 'unfocused'),
+                $this->dim($this->getAnswerDisplay()),
             );
         }
 
