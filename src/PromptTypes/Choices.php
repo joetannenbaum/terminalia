@@ -3,6 +3,7 @@
 namespace InteractiveConsole\PromptTypes;
 
 use Illuminate\Support\Collection;
+use InteractiveConsole\Enums\BlockSymbols;
 use InteractiveConsole\Enums\ControlSequence;
 use InteractiveConsole\Enums\TerminalEvent;
 use InteractiveConsole\Helpers\IsCancelable;
@@ -18,6 +19,8 @@ class Choices
 
     protected string $query = '';
 
+    protected bool $filtering = false;
+
     protected Collection $selected;
 
     protected int $focusedIndex = 0;
@@ -25,6 +28,10 @@ class Choices
     protected ?string $errorMessage = null;
 
     protected bool $multiple = false;
+
+    protected bool $filterable = false;
+
+    protected array $defaultCursorPosition;
 
     public function __construct(
         protected OutputStyle $output,
@@ -46,11 +53,18 @@ class Choices
         return $this;
     }
 
+    public function setFilterable(bool $filterable = true): self
+    {
+        $this->filterable = $filterable;
+
+        return $this;
+    }
+
     public function prompt(): mixed
     {
         $this->cursor->hide();
 
-        $this->writeQuestionBlock($this->question);
+        $this->writeTitleBlock($this->question);
 
         $this->writeChoices();
 
@@ -79,13 +93,12 @@ class Choices
         $this->canceled = true;
 
         $this->clearCurrentOutput();
-        $this->writeQuestionBlock();
+        $this->writeTitleBlock($this->question);
 
         if ($this->selected->count() > 0) {
             $this->writeBlock(
-                $this->wrapInTag(
+                $this->dim(
                     $this->selected->map(fn ($i) => $this->items->get($i))->join(', '),
-                    'unfocused',
                 ),
             );
         }
@@ -99,7 +112,36 @@ class Choices
     {
         $listener = $this->inputListener();
 
-        $listener->afterKeyPress($this->writeChoices(...));
+        $filterListener = $this->inputListener();
+
+        $filterListener->afterKeyPress($this->writeChoices(...));
+
+        $filterListener->on('*', function (string $text) {
+            $this->query .= $text;
+        });
+
+        $filterListener->on(
+            TerminalEvent::ESCAPE,
+            function () use ($filterListener, $listener) {
+                ray('got it, got the escape key');
+                $this->filtering = false;
+                $this->writeChoices();
+                $filterListener->stop();
+                $listener->listen();
+            }
+        );
+
+        $filterListener->on(ControlSequence::BACKSPACE, function () {
+            $this->query = substr($this->query, 0, -1);
+        });
+
+        $listener->on('/', function () use ($listener, $filterListener) {
+            $this->filtering = true;
+            $this->query = '';
+            $this->writeChoices();
+            $listener->stop();
+            $filterListener->listen();
+        });
 
         $listener->on([ControlSequence::UP, ControlSequence::LEFT], function () {
             $this->setRelativeFocusedIndex(-1);
@@ -116,6 +158,8 @@ class Choices
         $listener->on(TerminalEvent::EXIT, function () {
             $this->cursor->show();
         });
+
+        $listener->afterKeyPress($this->writeChoices(...));
 
         $listener->listen();
     }
@@ -148,21 +192,52 @@ class Choices
 
     protected function writeChoices()
     {
+        if ($this->filtering) {
+            if ($this->defaultCursorPosition[1] !== $this->cursor->getCurrentPosition()) {
+                ray('ok sure');
+                $this->cursor->moveToPosition(...$this->defaultCursorPosition);
+            }
+        }
+
         $this->clearContentAfterQuestion();
 
-        $this->items->each(function ($item, $i) {
-            $tag = $this->focusedIndex === $i ? 'focused' : 'unfocused';
-            $radioTag = $this->selected->contains($i) ? 'radio_selected' : 'radio_unselected';
+        if ($this->filtering) {
+            $this->writeBlock($this->active('>') . " {$this->query}");
+        }
 
-            if ($this->multiple) {
-                $checked = $this->selected->contains($i) ? '■' : '□';
-            } else {
-                $checked = $this->selected->contains($i) ? '●' : '○';
-            }
+        [$selectedSymbol, $unselectedSymbol] = $this->multiple
+            ? [BlockSymbols::CHECKBOX_SELECTED, BlockSymbols::CHECKBOX_UNSELECTED]
+            : [BlockSymbols::RADIO_SELECTED, BlockSymbols::RADIO_UNSELECTED];
 
-            $this->writeBlock($this->wrapInTag($checked, $radioTag) . ' ' . $this->wrapInTag($item, $tag));
-        });
+        $this->items->filter(
+            fn ($item) => str_contains(strtolower($item), strtolower($this->query))
+        )
+            ->each(
+                function ($item, $i) use ($selectedSymbol, $unselectedSymbol) {
+                    $checked = $this->selected->contains($i) ? $selectedSymbol : $unselectedSymbol;
+                    $display = $this->focusedIndex === $i ? $this->focused($item) : $this->dim($item);
+
+                    $radio = $this->selected->contains($i)
+                        ? $this->checkboxSelected($checked->symbol())
+                        : $this->checkboxUnselected($checked->symbol());
+
+                    $this->writeBlock("{$radio} {$display}");
+                }
+            );
+
+        if ($this->filterable) {
+            $this->writeBlock();
+            $this->writeBlock($this->keyboardShortcutHelp('/', 'filter'));
+        }
 
         $this->writeEndBlock($this->errorMessage ?? '');
+
+        if ($this->filtering) {
+            $this->cursor->moveUp(3 + $this->items->count());
+        }
+
+        if (!isset($this->defaultCursorPosition)) {
+            $this->defaultCursorPosition = $this->cursor->getCurrentPosition();
+        }
     }
 }

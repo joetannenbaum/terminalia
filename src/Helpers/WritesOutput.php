@@ -54,12 +54,15 @@ trait WritesOutput
 
     protected function writeBlock(string $text = '', BlockSymbols $borderSymbol = BlockSymbols::LINE): void
     {
-        $tag = $this->getStyleTagForBlockLine();
-
-        $this->writeLine("<{$tag}>{$borderSymbol->symbol()}</{$tag}> {$text}");
+        $this->writeLine(
+            $this->wrapInTag(
+                $borderSymbol->symbol(),
+                $this->getLineStyle(),
+            ) . ' ' . $text
+        );
     }
 
-    protected function getStyleTagForBlockLine(): string
+    protected function getLineStyle(): string
     {
         if ($this->canceled ?? false) {
             return 'dim';
@@ -72,7 +75,7 @@ trait WritesOutput
         return 'info';
     }
 
-    protected function getStyledSymbolForQuestionBlock(): string
+    protected function getStyledSymbolForTitleBlock(): string
     {
         if ($this->canceled) {
             return $this->canceled(BlockSymbols::CANCELED->symbol());
@@ -92,14 +95,14 @@ trait WritesOutput
 
     protected function writeTitleBlock(string $text): void
     {
-        $this->writeLine($this->dim(BlockSymbols::LINE->symbol()));
-
-        $this->writeLine($this->getStyledSymbolForQuestionBlock() . ' ' . $text);
+        // Write a leading line to separate the previous question
+        $this->writeInactiveBlock();
+        $this->writeLine($this->getStyledSymbolForTitleBlock() . ' ' . $text);
     }
 
     protected function writeAnsweredBlock(string $answer): void
     {
-        $this->writeLine($this->dim(BlockSymbols::LINE->symbol()));
+        $this->writeInactiveBlock();
         $this->writeLine($this->active(BlockSymbols::ANSWERED->symbol()) . ' ' . $this->question);
         $this->writeLine($this->dim(BlockSymbols::LINE->symbol() . ' ' . $answer));
     }

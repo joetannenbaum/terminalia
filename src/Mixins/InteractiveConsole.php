@@ -21,6 +21,7 @@ class InteractiveConsole
             $default = null,
             $multiple = false,
             $rules = null,
+            $filterable = false,
         ) {
             $helper = new Choices(
                 output: $this->output,
@@ -35,6 +36,10 @@ class InteractiveConsole
 
             if ($multiple) {
                 $helper->setMultiple();
+            }
+
+            if ($filterable) {
+                $helper->setFilterable();
             }
 
             $this->trap(SIGINT, fn () => $helper->onCancel());
