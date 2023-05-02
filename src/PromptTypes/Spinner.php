@@ -124,13 +124,11 @@ class Spinner
                 fn ($v, $k) => $runningTime >= $k
             ) ?: '';
 
-            $index = ($index === $animation->count() - 1) ? 0 : $index + 1;
-
             $this->cursor->moveToColumn(0);
             $this->cursor->clearLine();
 
             $this->output->write(
-                $this->wrapInTag($animation->get($index), 'spinner')
+                $this->wrapInTag($animation->loop($index++), 'spinner')
                     . ' '
                     . $this->title
                     . Str::of($longProcessMessage)->whenNotEmpty(
