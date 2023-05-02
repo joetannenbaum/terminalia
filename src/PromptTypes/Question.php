@@ -38,7 +38,7 @@ class Question
     {
         $this->cursor->hide();
 
-        $this->writeQuestionBlock($this->question);
+        $this->writeTitleBlock($this->question);
         $this->writeBlock($this->answer);
         $this->writeEndBlock($this->errorMessage ?? '');
 
@@ -70,7 +70,7 @@ class Question
         $this->canceled = true;
 
         $this->clearQuestion();
-        $this->writeQuestionBlock();
+        $this->writeTitleBlock($this->question);
 
         if ($this->getAnswerDisplay() !== '') {
             $this->writeBlock(

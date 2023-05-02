@@ -32,7 +32,7 @@ class Confirm
     {
         $this->cursor->hide();
 
-        $this->writeQuestionBlock($this->question);
+        $this->writeTitleBlock($this->question);
 
         $this->writeChoices();
 
@@ -52,7 +52,7 @@ class Confirm
         $this->canceled = true;
 
         $this->clearCurrentOutput();
-        $this->writeQuestionBlock();
+        $this->writeTitleBlock($this->question);
         $this->writeBlock($this->wrapInTag($this->answer ? 'Yes' : 'No', 'unfocused'));
         $this->writeCanceledBlock($message);
 

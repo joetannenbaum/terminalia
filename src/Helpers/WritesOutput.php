@@ -90,13 +90,11 @@ trait WritesOutput
         $this->writeBlock($text, BlockSymbols::END);
     }
 
-    protected function writeQuestionBlock(): void
+    protected function writeTitleBlock(string $text): void
     {
         $this->writeLine($this->wrapInTag(BlockSymbols::LINE->value, 'unfocused'));
 
-        $symbol = $this->getStyledSymbolForQuestionBlock();
-
-        $this->writeLine($symbol . ' ' . $this->question);
+        $this->writeLine($this->getStyledSymbolForQuestionBlock() . ' ' . $text);
     }
 
     protected function writeAnsweredBlock(string $answer): void

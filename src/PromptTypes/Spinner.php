@@ -77,9 +77,8 @@ class Spinner
         $this->cursor->moveUp();
         $this->writeBlock('');
 
-        $this->writeLine(
-            $this->getStyledSymbolForQuestionBlock() . ' ' .
-                $this->wrapInTag($this->title, 'unfocused'),
+        $this->writeTitleBlock(
+            $this->wrapInTag($this->title, 'unfocused')
         );
 
         $this->writeCanceledBlock($message);

@@ -33,8 +33,7 @@ class ProgressBar
     {
         $this->cursor->hide();
 
-        $this->writeBlock('');
-        $this->writeBlock($this->title ?? '', BlockSymbols::ACTIVE);
+        $this->writeTitleBlock($this->title ?? '');
 
         if ($this->title) {
             $this->writeBlock('');
@@ -84,9 +83,8 @@ class ProgressBar
 
         $this->writeInactiveBlock();
 
-        $this->writeLine(
-            $this->getStyledSymbolForQuestionBlock() . ' ' .
-                $this->wrapInTag($this->title ?? '', 'unfocused'),
+        $this->writeTitleBlock(
+            $this->wrapInTag($this->title ?? '', 'unfocused'),
         );
 
         if ($this->title) {
