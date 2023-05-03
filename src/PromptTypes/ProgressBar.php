@@ -36,40 +36,43 @@ class ProgressBar
         $this->writeTitleBlock($this->title ?? '');
 
         if ($this->title) {
+            // Leave a space for the progres bar to overwrite
             $this->writeBlock('');
         }
 
+        // Mark where the progress bar should go, 2 lines up from here
+        $position = $this->cursor->getCurrentPosition();
+        $this->bookmark('progressBar', [3, $position[1] - 2]);
+
         $this->writeEndBlock('');
-
-        $this->cursor->moveUp(2);
-
         $this->writeProgressBar();
     }
 
     public function advance(int $step = 1)
     {
         $this->current += $step;
-
         $this->writeProgressBar();
     }
 
     public function finish()
     {
-        $this->cursor->moveToColumn(0);
-        $this->cursor->moveUp($this->title ? 2 : 1);
-        $this->cursor->clearOutput();
+        $this->clearCurrentOutput();
         $this->writeInactiveBlock();
         $this->writeBlock($this->title ?? '', BlockSymbols::ANSWERED);
 
         if ($this->title) {
+            // Leave a space for the progres bar to overwrite
+            // TODO: Another instance of maybe needing an $answered flag so that we can style automatically?
             $this->writeInactiveBlock();
         }
 
         $this->writeInactiveBlock();
-        $this->cursor->moveUp(2);
         $this->writeProgressBar();
+
+        // Put the cursor back in place for the next question
         $this->cursor->moveDown();
         $this->cursor->moveToColumn(0);
+
         $this->cursor->show();
     }
 
@@ -77,26 +80,18 @@ class ProgressBar
     {
         $this->canceled = true;
 
-        $this->cursor->moveDown(2);
-        $this->cursor->moveToColumn(0);
         $this->clearCurrentOutput();
-
-        $this->writeInactiveBlock();
-
-        $this->writeTitleBlock(
-            $this->dim($this->title ?? ''),
-        );
+        $this->writeTitleBlock($this->dim($this->title ?? ''));
 
         if ($this->title) {
-            $this->writeBlock('');
+            $this->writeInactiveBlock('');
         }
-
-        $this->cursor->moveUp();
 
         $this->writeProgressBar();
 
-        $this->cursor->moveToColumn(0);
+        // Put the cursor back in place to accomodate for the cancel block
         $this->cursor->moveDown();
+        $this->cursor->moveToColumn(0);
 
         $this->writeCanceledBlock($message);
 
@@ -105,7 +100,7 @@ class ProgressBar
 
     protected function writeProgressBar()
     {
-        $this->cursor->moveToColumn(3);
+        $this->moveToBookmark('progressBar');
         $this->cursor->clearLineAfter();
 
         $percentage = min(round(($this->current / $this->total) * 100), 100);
@@ -114,10 +109,11 @@ class ProgressBar
         $percentageFilled = $percentageRounded / 10;
         $percentageEmpty = 10 - $percentageFilled;
 
+        $filled = $percentageFilled > 0 ? str_repeat(self::BAR_CHARACTER, $percentageFilled) : '';
+        $empty = $percentageEmpty > 0 ? str_repeat(self::EMPTY_BAR_CHARACTER, $percentageEmpty) : '';
+
         $this->output->write(
-            ($percentageFilled > 0 ? str_repeat(self::BAR_CHARACTER, $percentageFilled) : '')
-                . ($percentageEmpty > 0 ? $this->dim(str_repeat(self::EMPTY_BAR_CHARACTER, $percentageEmpty)) : '')
-                . $this->dim(" {$percentage}% ({$this->current}/{$this->total})"),
+            $filled . $this->dim("{$empty} {$percentage}% ({$this->current}/{$this->total})"),
         );
     }
 }

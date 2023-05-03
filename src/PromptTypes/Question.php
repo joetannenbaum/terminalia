@@ -113,9 +113,6 @@ class Question
 
     protected function clearQuestion(): void
     {
-        $this->cursor->moveDown(2);
-        $this->cursor->moveToColumn(0);
-
         $this->clearCurrentOutput();
     }
 

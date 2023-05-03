@@ -7,35 +7,11 @@ use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 trait WritesOutput
 {
-    protected $lines = 0;
+    use UsesTheCursor;
 
     protected function writeLine(string $text): void
     {
         $this->output->writeln($text);
-        $this->lines++;
-    }
-
-    protected function moveCursorToStart(): void
-    {
-        $this->cursor->moveUp($this->lines);
-        $this->lines = 0;
-    }
-
-    protected function clearCurrentOutput(): void
-    {
-        $this->moveCursorToStart();
-        $this->cursor->clearOutput();
-    }
-
-    protected function clearContentAfterQuestion(): void
-    {
-        if ($this->lines <= 2) {
-            return;
-        }
-
-        $this->cursor->moveUp($this->lines - 2);
-        $this->lines = 2;
-        $this->cursor->clearOutput();
     }
 
     protected function hasError(): bool
@@ -98,6 +74,7 @@ trait WritesOutput
         // Write a leading line to separate the previous question
         $this->writeInactiveBlock();
         $this->writeLine($this->getStyledSymbolForTitleBlock() . ' ' . $text);
+        $this->bookmark('endOfTitle');
     }
 
     protected function writeAnsweredBlock(string $answer): void

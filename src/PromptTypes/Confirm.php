@@ -79,7 +79,7 @@ class Confirm
 
     protected function writeChoices(): void
     {
-        $this->clearContentAfterQuestion();
+        $this->clearContentAfterTitle();
 
         $index = $this->answer ? 0 : 1;
 

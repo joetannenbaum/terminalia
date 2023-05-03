@@ -123,7 +123,6 @@ class Choices
         $filterListener->on(
             TerminalEvent::ESCAPE,
             function () use ($filterListener, $listener) {
-                ray('got it, got the escape key');
                 $this->filtering = false;
                 $this->writeChoices();
                 $filterListener->stop();
@@ -194,12 +193,11 @@ class Choices
     {
         if ($this->filtering) {
             if ($this->defaultCursorPosition[1] !== $this->cursor->getCurrentPosition()) {
-                ray('ok sure');
                 $this->cursor->moveToPosition(...$this->defaultCursorPosition);
             }
         }
 
-        $this->clearContentAfterQuestion();
+        $this->clearContentAfterTitle();
 
         if ($this->filtering) {
             $this->writeBlock($this->active('>') . " {$this->query}");

@@ -72,15 +72,8 @@ class Spinner
         $this->socketToSpinner->close();
         $this->socketToTask->close();
 
-        $this->cursor->moveToColumn(0);
-        $this->cursor->clearLine();
-        $this->cursor->moveUp();
-        $this->writeBlock('');
-
-        $this->writeTitleBlock(
-            $this->dim($this->title)
-        );
-
+        $this->clearCurrentOutput();
+        $this->writeTitleBlock($this->dim($this->title));
         $this->writeCanceledBlock($message);
 
         exit;
