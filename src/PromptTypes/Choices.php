@@ -130,6 +130,35 @@ class Choices
             }
         );
 
+        $filterListener->setStopOnEnter(false);
+
+        $filterListener->on(
+            "\n",
+            function () use ($filterListener, $listener) {
+                if (trim($this->query) === '') {
+                    $this->filtering = false;
+                    $this->writeChoices();
+                    $filterListener->stop();
+                    $listener->listen();
+                } else {
+                    $this->setSelected();
+                    $this->query = '';
+                }
+            }
+        );
+
+        $filterListener->on(' ', function () {
+            $this->setSelected();
+        });
+
+        $filterListener->on([ControlSequence::UP, ControlSequence::LEFT], function () {
+            $this->setRelativeFocusedIndex(-1);
+        });
+
+        $filterListener->on([ControlSequence::DOWN, ControlSequence::RIGHT], function () {
+            $this->setRelativeFocusedIndex(1);
+        });
+
         $filterListener->on(ControlSequence::BACKSPACE, function () {
             $this->query = substr($this->query, 0, -1);
         });
@@ -176,6 +205,12 @@ class Choices
 
     protected function setSelected()
     {
+        if ($this->focusedIndex === -1) {
+            // We are filtering and there are no valid choices,
+            // so we don't want to change anything.
+            return;
+        }
+
         if (!$this->multiple) {
             $this->selected = collect([$this->focusedIndex]);
 
@@ -191,15 +226,14 @@ class Choices
 
     protected function writeChoices()
     {
-        if ($this->filtering) {
-            if ($this->defaultCursorPosition[1] !== $this->cursor->getCurrentPosition()) {
-                $this->cursor->moveToPosition(...$this->defaultCursorPosition);
-            }
-        }
-
+        $this->cursor->hide();
         $this->clearContentAfterTitle();
 
         if ($this->filtering) {
+            if (!$this->hasBookmark('filterQuery')) {
+                $this->bookmark('filterQuery');
+            }
+
             $this->writeBlock($this->active('>') . " {$this->query}");
         }
 
@@ -207,35 +241,42 @@ class Choices
             ? [BlockSymbols::CHECKBOX_SELECTED, BlockSymbols::CHECKBOX_UNSELECTED]
             : [BlockSymbols::RADIO_SELECTED, BlockSymbols::RADIO_UNSELECTED];
 
-        $this->items->filter(
+        $currentItems = $this->items->filter(
             fn ($item) => str_contains(strtolower($item), strtolower($this->query))
-        )
-            ->each(
-                function ($item, $i) use ($selectedSymbol, $unselectedSymbol) {
-                    $checked = $this->selected->contains($i) ? $selectedSymbol : $unselectedSymbol;
-                    $display = $this->focusedIndex === $i ? $this->focused($item) : $this->dim($item);
+        );
 
-                    $radio = $this->selected->contains($i)
-                        ? $this->checkboxSelected($checked->symbol())
-                        : $this->checkboxUnselected($checked->symbol());
+        if (!$currentItems->keys()->contains($this->focusedIndex)) {
+            $this->focusedIndex = $currentItems->keys()->first() ?? -1;
+        }
 
-                    $this->writeBlock("{$radio} {$display}");
-                }
-            );
+        $currentItems->each(
+            function ($item, $i) use ($selectedSymbol, $unselectedSymbol) {
+                $checked = $this->selected->contains($i) ? $selectedSymbol : $unselectedSymbol;
+                $display = $this->focusedIndex === $i ? $this->focused($item) : $this->dim($item);
+
+                $radio = $this->selected->contains($i)
+                    ? $this->checkboxSelected($checked->symbol())
+                    : $this->checkboxUnselected($checked->symbol());
+
+                $this->writeBlock("{$radio} {$display}");
+            }
+        );
 
         if ($this->filterable) {
             $this->writeBlock();
-            $this->writeBlock($this->keyboardShortcutHelp('/', 'filter'));
+            if ($this->filtering) {
+                $this->writeBlock($this->keyboardShortcutHelp('esc', 'stop filtering'));
+            } else {
+                $this->writeBlock($this->keyboardShortcutHelp('/', 'filter'));
+            }
         }
 
         $this->writeEndBlock($this->errorMessage ?? '');
 
         if ($this->filtering) {
-            $this->cursor->moveUp(3 + $this->items->count());
-        }
-
-        if (!isset($this->defaultCursorPosition)) {
-            $this->defaultCursorPosition = $this->cursor->getCurrentPosition();
+            $this->moveToBookmark('filterQuery');
+            $this->cursor->moveToColumn(mb_strlen("> {$this->query}") + 3);
+            $this->cursor->show();
         }
     }
 }

@@ -61,7 +61,8 @@ class InputListener
     {
         $this->stopListening = false;
 
-        $this->sttyMode = shell_exec('stty -g');
+        $this->sttyMode ??= shell_exec('stty -g');
+
         $isStdin = 'php://stdin' === (stream_get_meta_data($this->inputStream)['uri'] ?? null);
         $r = [$this->inputStream];
         $w = [];
@@ -69,7 +70,7 @@ class InputListener
         shell_exec('stty -icanon -echo');
 
         // Read a keypress
-        while (!feof($this->inputStream) && !$this->stopListening) {
+        while (!$this->stopListening) {
             while ($isStdin && 0 === @stream_select($r, $w, $w, 0, 100)) {
                 // Give signal handlers a chance to run
                 $r = [$this->inputStream];
@@ -78,6 +79,7 @@ class InputListener
             $c = fread($this->inputStream, 1);
 
             if (!$this->handleInput($c)) {
+                $this->stopListening = true;
                 break;
             }
 
@@ -92,6 +94,13 @@ class InputListener
     public function stop()
     {
         $this->stopListening = true;
+    }
+
+    public function setStopOnEnter(bool $stopOnEnterPress): static
+    {
+        $this->stopOnEnterPress = $stopOnEnterPress;
+
+        return $this;
     }
 
     protected function run(string $toRun): void

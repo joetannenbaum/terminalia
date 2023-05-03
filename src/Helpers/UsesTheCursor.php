@@ -28,6 +28,11 @@ trait UsesTheCursor
         $this->bookmarks[$name] = $position ?? $this->getCurrentCursorPosition();
     }
 
+    protected function hasBookmark(string $name): bool
+    {
+        return isset($this->bookmarks[$name]);
+    }
+
     protected function moveToBookmark(string $name)
     {
         if (!isset($this->bookmarks[$name])) {
