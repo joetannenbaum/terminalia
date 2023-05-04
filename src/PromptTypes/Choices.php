@@ -24,6 +24,8 @@ class Choices
 
     protected Collection $selected;
 
+    protected Collection $displayedItems;
+
     protected int $focusedIndex = 0;
 
     protected ?string $errorMessage = null;
@@ -45,6 +47,7 @@ class Choices
         $this->initCursor();
         $this->selected = collect(is_array($default) ? $default : [$default]);
         $this->registerStyles();
+        $this->displayedItems = $this->items;
     }
 
     public function setMultiple(bool $multiple = true): self
@@ -122,6 +125,24 @@ class Choices
         $listener->listen();
     }
 
+    protected function setQuery(string $query)
+    {
+        $this->query = $query;
+        $this->setDisplayedItems();
+    }
+
+    protected function setDisplayedItems()
+    {
+        if ($this->query === '') {
+            $this->displayedItems = $this->items;
+            return;
+        }
+
+        $this->displayedItems = $this->items->filter(
+            fn ($item) => str_contains(strtolower($item), strtolower($this->query))
+        );
+    }
+
     protected function registerCommonListeners(InputListener $listener)
     {
         $listener->on([ControlSequence::UP, ControlSequence::LEFT], function () {
@@ -148,7 +169,7 @@ class Choices
         $filterListener = $this->inputListener();
 
         $filterListener->on('*', function (string $text) {
-            $this->query .= $text;
+            $this->setQuery($this->query . $text);
         });
 
         $filterListener->on(
@@ -173,18 +194,18 @@ class Choices
                     $defaultListener->listen();
                 } else {
                     $this->setSelected();
-                    $this->query = '';
+                    $this->setQuery('');
                 }
             }
         );
 
         $filterListener->on(ControlSequence::BACKSPACE, function () {
-            $this->query = substr($this->query, 0, -1);
+            $this->setQuery(substr($this->query, 0, -1));
         });
 
         $defaultListener->on('/', function () use ($defaultListener, $filterListener) {
             $this->filtering = true;
-            $this->query = '';
+            $this->setQuery('');
             $this->writeChoices();
             $defaultListener->stop();
             $filterListener->listen();
@@ -193,18 +214,51 @@ class Choices
         $this->registerCommonListeners($filterListener);
     }
 
-    protected function setRelativeFocusedIndex(int $offset)
+    protected function setRelativeFocusedIndex(int $offset): void
     {
-        $this->focusedIndex += $offset;
-
-        if ($this->focusedIndex < 0) {
-            $this->focusedIndex = $this->items->count() - 1;
-        } elseif ($this->focusedIndex >= $this->items->count()) {
-            $this->focusedIndex = 0;
-        }
+        $this->focusedIndex = $this->getFocusedIndexFromOffset($offset);
     }
 
-    protected function setSelected()
+    protected function getFocusedIndexFromOffset(int $offset): int
+    {
+        $newIndex = $this->focusedIndex + $offset;
+
+        if ($this->displayedItems->count() === 0) {
+            // If we aren't displaying anything, just cut out early
+            return -1;
+        }
+
+        if ($this->displayedItems->count() === 1) {
+            // No need to change anything, we already have the right focused item
+            return $this->focusedIndex;
+        }
+
+        if ($newIndex >= $this->items->count()) {
+            return $this->displayedItems->keys()->first() ?? -1;
+        }
+
+        if ($newIndex < 0) {
+            return $this->displayedItems->keys()->last() ?? -1;
+        }
+
+        if ($this->displayedItems->keys()->contains($newIndex)) {
+            return $newIndex;
+        }
+
+        $newKey = $this->displayedItems->keys()->first(fn ($i) => $offset > 0 ? $i > $this->focusedIndex : $i < $this->focusedIndex);
+
+        if ($newKey !== null) {
+            return $newKey;
+        }
+
+        if ($offset < 0) {
+            return $this->displayedItems->keys()->last();
+        }
+
+        return $this->displayedItems->keys()->first();
+    }
+
+    protected function setSelected(): void
     {
         if ($this->focusedIndex === -1) {
             // We are filtering and there are no valid choices,
@@ -242,15 +296,11 @@ class Choices
             ? [BlockSymbols::CHECKBOX_SELECTED, BlockSymbols::CHECKBOX_UNSELECTED]
             : [BlockSymbols::RADIO_SELECTED, BlockSymbols::RADIO_UNSELECTED];
 
-        $currentItems = $this->items->filter(
-            fn ($item) => str_contains(strtolower($item), strtolower($this->query))
-        );
-
-        if (!$currentItems->keys()->contains($this->focusedIndex)) {
-            $this->focusedIndex = $currentItems->keys()->first() ?? -1;
+        if (!$this->displayedItems->keys()->contains($this->focusedIndex)) {
+            $this->focusedIndex = $this->displayedItems->keys()->first() ?? -1;
         }
 
-        $currentItems->each(
+        $this->displayedItems->each(
             function ($item, $i) use ($selectedSymbol, $unselectedSymbol) {
                 $checked = $this->selected->contains($i) ? $selectedSymbol : $unselectedSymbol;
                 $display = $this->focusedIndex === $i ? $this->focused($item) : $this->dim($item);
