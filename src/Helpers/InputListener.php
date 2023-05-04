@@ -19,12 +19,13 @@ class InputListener
 
     protected array $eventListeners = [];
 
-    protected string $sttyMode;
-
     protected bool $stopListening = false;
+
+    protected Stty $stty;
 
     public function __construct(protected $inputStream)
     {
+        $this->stty = new Stty();
     }
 
     public function on(string|ControlSequence|TerminalEvent|array $key, callable $cb): static
@@ -61,13 +62,11 @@ class InputListener
     {
         $this->stopListening = false;
 
-        $this->sttyMode ??= shell_exec('stty -g');
-
         $isStdin = 'php://stdin' === (stream_get_meta_data($this->inputStream)['uri'] ?? null);
         $r = [$this->inputStream];
         $w = [];
 
-        shell_exec('stty -icanon -echo');
+        $this->stty->disableEcho();
 
         // Read a keypress
         while (!$this->stopListening) {
@@ -88,7 +87,7 @@ class InputListener
             }
         }
 
-        shell_exec('stty ' . $this->sttyMode);
+        $this->stty->restore();
     }
 
     public function stop()
@@ -157,7 +156,7 @@ class InputListener
         if ($c === false || $c === '') {
             $this->run('onExit');
 
-            shell_exec('stty ' . $this->sttyMode);
+            $this->stty->restore();
 
             throw new \Exception('Aborted.');
         }
@@ -169,16 +168,20 @@ class InputListener
         }
 
         if ($c === "\033") {
-            $c .= fread($this->inputStream, 2);
+            $meta = stream_get_meta_data($this->inputStream);
 
-            if (!isset($c[2])) {
+            if ($meta['unread_bytes'] === 0) {
                 // They pressed escape, probably
                 $this->handleEvent(TerminalEvent::ESCAPE->value);
 
                 return true;
             }
 
-            $this->handleControlSequence($c[2]);
+            $c .= fread($this->inputStream, 2);
+
+            if (isset($c[2])) {
+                $this->handleControlSequence($c[2]);
+            }
 
             return true;
         }

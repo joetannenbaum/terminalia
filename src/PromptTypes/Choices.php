@@ -6,6 +6,7 @@ use Illuminate\Support\Collection;
 use InteractiveConsole\Enums\BlockSymbols;
 use InteractiveConsole\Enums\ControlSequence;
 use InteractiveConsole\Enums\TerminalEvent;
+use InteractiveConsole\Helpers\InputListener;
 use InteractiveConsole\Helpers\IsCancelable;
 use InteractiveConsole\Helpers\ListensForInput;
 use InteractiveConsole\Helpers\UsesTheCursor;
@@ -112,65 +113,17 @@ class Choices
     {
         $listener = $this->inputListener();
 
-        $filterListener = $this->inputListener();
+        if ($this->filterable) {
+            $this->registerFilterListeners($listener);
+        }
 
-        $filterListener->afterKeyPress($this->writeChoices(...));
+        $this->registerCommonListeners($listener);
 
-        $filterListener->on('*', function (string $text) {
-            $this->query .= $text;
-        });
+        $listener->listen();
+    }
 
-        $filterListener->on(
-            TerminalEvent::ESCAPE,
-            function () use ($filterListener, $listener) {
-                $this->filtering = false;
-                $this->writeChoices();
-                $filterListener->stop();
-                $listener->listen();
-            }
-        );
-
-        $filterListener->setStopOnEnter(false);
-
-        $filterListener->on(
-            "\n",
-            function () use ($filterListener, $listener) {
-                if (trim($this->query) === '') {
-                    $this->filtering = false;
-                    $this->writeChoices();
-                    $filterListener->stop();
-                    $listener->listen();
-                } else {
-                    $this->setSelected();
-                    $this->query = '';
-                }
-            }
-        );
-
-        $filterListener->on(' ', function () {
-            $this->setSelected();
-        });
-
-        $filterListener->on([ControlSequence::UP, ControlSequence::LEFT], function () {
-            $this->setRelativeFocusedIndex(-1);
-        });
-
-        $filterListener->on([ControlSequence::DOWN, ControlSequence::RIGHT], function () {
-            $this->setRelativeFocusedIndex(1);
-        });
-
-        $filterListener->on(ControlSequence::BACKSPACE, function () {
-            $this->query = substr($this->query, 0, -1);
-        });
-
-        $listener->on('/', function () use ($listener, $filterListener) {
-            $this->filtering = true;
-            $this->query = '';
-            $this->writeChoices();
-            $listener->stop();
-            $filterListener->listen();
-        });
-
+    protected function registerCommonListeners(InputListener $listener)
+    {
         $listener->on([ControlSequence::UP, ControlSequence::LEFT], function () {
             $this->setRelativeFocusedIndex(-1);
         });
@@ -188,8 +141,56 @@ class Choices
         });
 
         $listener->afterKeyPress($this->writeChoices(...));
+    }
 
-        $listener->listen();
+    protected function registerFilterListeners(InputListener $defaultListener)
+    {
+        $filterListener = $this->inputListener();
+
+        $filterListener->on('*', function (string $text) {
+            $this->query .= $text;
+        });
+
+        $filterListener->on(
+            TerminalEvent::ESCAPE,
+            function () use ($filterListener, $defaultListener) {
+                $this->filtering = false;
+                $this->writeChoices();
+                $filterListener->stop();
+                $defaultListener->listen();
+            }
+        );
+
+        $filterListener->setStopOnEnter(false);
+
+        $filterListener->on(
+            "\n",
+            function () use ($filterListener, $defaultListener) {
+                if (trim($this->query) === '') {
+                    $this->filtering = false;
+                    $this->writeChoices();
+                    $filterListener->stop();
+                    $defaultListener->listen();
+                } else {
+                    $this->setSelected();
+                    $this->query = '';
+                }
+            }
+        );
+
+        $filterListener->on(ControlSequence::BACKSPACE, function () {
+            $this->query = substr($this->query, 0, -1);
+        });
+
+        $defaultListener->on('/', function () use ($defaultListener, $filterListener) {
+            $this->filtering = true;
+            $this->query = '';
+            $this->writeChoices();
+            $defaultListener->stop();
+            $filterListener->listen();
+        });
+
+        $this->registerCommonListeners($filterListener);
     }
 
     protected function setRelativeFocusedIndex(int $offset)

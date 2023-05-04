@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use InteractiveConsole\Enums\BlockSymbols;
 use InteractiveConsole\Helpers\IsCancelable;
 use InteractiveConsole\Helpers\SpinnerMessenger;
+use InteractiveConsole\Helpers\Stty;
 use InteractiveConsole\Helpers\UsesTheCursor;
 use InteractiveConsole\Helpers\WritesOutput;
 use Spatie\Fork\Connection;
@@ -41,6 +42,10 @@ class Spinner
 
     public function spin(): mixed
     {
+        $stty = new Stty();
+
+        $stty->disableEcho();
+
         // Create a pair of socket connections so the two tasks can communicate
         [$this->socketToTask, $this->socketToSpinner] = Connection::createPair();
 
@@ -57,6 +62,8 @@ class Spinner
 
         $this->socketToSpinner->close();
         $this->socketToTask->close();
+
+        $stty->restore();
 
         return $result[0];
     }

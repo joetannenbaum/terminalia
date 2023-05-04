@@ -4,6 +4,7 @@ namespace InteractiveConsole\PromptTypes;
 
 use InteractiveConsole\Enums\BlockSymbols;
 use InteractiveConsole\Helpers\IsCancelable;
+use InteractiveConsole\Helpers\Stty;
 use InteractiveConsole\Helpers\UsesTheCursor;
 use InteractiveConsole\Helpers\WritesOutput;
 use Symfony\Component\Console\Style\OutputStyle;
@@ -18,6 +19,8 @@ class ProgressBar
 
     protected $current = 0;
 
+    protected Stty $stty;
+
     public function __construct(
         protected OutputStyle $output,
         protected int $total,
@@ -27,10 +30,14 @@ class ProgressBar
         $this->inputStream = $this->inputStream ?? fopen('php://stdin', 'rb');
         $this->initCursor();
         $this->registerStyles();
+
+        $this->stty = new Stty();
     }
 
     public function start()
     {
+        $this->stty->disableEcho();
+
         $this->cursor->hide();
 
         $this->writeTitleBlock($this->title ?? '');
@@ -74,6 +81,8 @@ class ProgressBar
         $this->cursor->moveToColumn(0);
 
         $this->cursor->show();
+
+        $this->stty->restore();
     }
 
     public function onCancel(string $message = 'Canceled'): void
