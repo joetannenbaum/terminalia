@@ -22,7 +22,7 @@ class InteractiveConsole
             $multiple = false,
             $rules = null,
             $filterable = false,
-            $filterThreshold = 5,
+            $minFilterLength = 5,
         ) {
             $helper = new Choices(
                 output: $this->output,
@@ -39,7 +39,7 @@ class InteractiveConsole
                 $helper->setMultiple();
             }
 
-            if ($filterable && count($items) >= $filterThreshold) {
+            if ($filterable && count($items) >= $minFilterLength) {
                 $helper->setFilterable();
             }
 

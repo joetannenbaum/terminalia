@@ -93,6 +93,57 @@ The `rules` argument of these methods uses Laravel's built-in validator, so it a
 
 **Note:** If you're using validation within a [Laravel Zero](https://laravel-zero.com) app, remember to register your `ValidationServiceProvider::class` and `TranslationServiceProvider::class` in your `config/app.php` file and also include a `lang` directory in your project root.
 
+## Filtering Choices
+
+If you have a longer list of choices, you can allow the user to filter them using the `filter` argument. This will allow the user to type in a search term and the list will be filtered to only show items that match the search term.
+
+```php
+$favoriteThings = $this->interactiveChoice(
+    question: 'Which are your favorite things:',
+    items: [
+        'raindrops on roses',
+        'whiskers on kittens',
+        'bright copper kettles',
+        'warm woolen mittens',
+        'brown paper packages tied up with strings',
+        'cream colored ponies',
+        'crisp apple strudels',
+        'doorbells',
+        'sleigh bells',
+        'schnitzel with noodles',
+    ],
+    multiple: true,
+    rules: ['required'],
+    filterable: true,
+);
+```
+
+![Demo](examples/choice-filtering.gif)
+
+By default, the `filter` argument will only have an effect if you have over 5 items in your list. You can change this by passing a different number to the `minFilterLength` argument:
+
+```php
+$favoriteThings = $this->interactiveChoice(
+    question: 'Which are your favorite things:',
+    items: [
+        'raindrops on roses',
+        'whiskers on kittens',
+        'bright copper kettles',
+        'warm woolen mittens',
+        'brown paper packages tied up with strings',
+        'cream colored ponies',
+        'crisp apple strudels',
+        'doorbells',
+        'sleigh bells',
+        'schnitzel with noodles',
+    ],
+    multiple: true,
+    rules: ['required'],
+    filterable: true,
+    minFilterLength: 3,
+);
+```
+
 ## Spinner
 
 The `spinner` method allows you to show a spinner while an indefinite process is running. It allows customization to you can inform your user of what's happening as the process runs. The result of the spinner will be whatever is returned from the `task` argument.
