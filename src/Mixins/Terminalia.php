@@ -2,7 +2,9 @@
 
 namespace Terminalia\Mixins;
 
-use Terminalia\PromptTypes\Choices;
+use Illuminate\Support\Collection;
+use Terminalia\Helpers\Choices;
+use Terminalia\PromptTypes\Choice;
 use Terminalia\PromptTypes\Confirm;
 use Terminalia\PromptTypes\Intro;
 use Terminalia\PromptTypes\Note;
@@ -18,17 +20,18 @@ class Terminalia
     {
         return function (
             string $question,
-            array $items,
+            array|Choices|Collection $items,
             $default = null,
             $multiple = false,
             $rules = null,
             $filterable = false,
             $minFilterLength = 5,
         ) {
-            $helper = new Choices(
+            $helper = new Choice(
                 output: $this->output,
                 question: $question,
-                items: collect($items),
+                items: collect($items instanceof Choices ? [] : $items),
+                choices: $items instanceof Choices ? $items : null,
                 default: $default ?? [],
             );
 

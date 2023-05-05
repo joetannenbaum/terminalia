@@ -2,9 +2,9 @@
 
 namespace Terminalia\PromptTypes;
 
+use Symfony\Component\Console\Style\OutputStyle;
 use Terminalia\Enums\BlockSymbols;
 use Terminalia\Helpers\WritesOutput;
-use Symfony\Component\Console\Style\OutputStyle;
 
 class Output
 {
@@ -29,11 +29,11 @@ class Output
         $lines = collect(explode(PHP_EOL, wordwrap($this->text, 60)));
 
         $blockSymbol = match ($this->tag) {
-            'info' => BlockSymbols::ANSWERED,
+            'info'    => BlockSymbols::ANSWERED,
             'comment' => BlockSymbols::RADIO_SELECTED,
             'warning' => BlockSymbols::WARNING,
-            'error' => BlockSymbols::CANCELED,
-            default => BlockSymbols::ANSWERED,
+            'error'   => BlockSymbols::CANCELED,
+            default   => BlockSymbols::ANSWERED,
         };
 
         $tag = match ($this->tag) {

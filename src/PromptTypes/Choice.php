@@ -3,18 +3,19 @@
 namespace Terminalia\PromptTypes;
 
 use Illuminate\Support\Collection;
+use Symfony\Component\Console\Style\OutputStyle;
 use Terminalia\Enums\BlockSymbols;
 use Terminalia\Enums\ControlSequence;
 use Terminalia\Enums\TerminalEvent;
+use Terminalia\Helpers\Choices;
 use Terminalia\Helpers\InputListener;
 use Terminalia\Helpers\IsCancelable;
 use Terminalia\Helpers\ListensForInput;
 use Terminalia\Helpers\UsesTheCursor;
 use Terminalia\Helpers\ValidatesInput;
 use Terminalia\Helpers\WritesOutput;
-use Symfony\Component\Console\Style\OutputStyle;
 
-class Choices
+class Choice
 {
     use ListensForInput, WritesOutput, ValidatesInput, IsCancelable, UsesTheCursor;
 
@@ -39,15 +40,32 @@ class Choices
     public function __construct(
         protected OutputStyle $output,
         protected string $question,
-        protected Collection $items,
+        protected Collection|Choices $items,
         protected string|array $default = [],
+        protected ?Choices $choices = null,
         protected $inputStream = null,
     ) {
         $this->inputStream = $this->inputStream ?? fopen('php://stdin', 'rb');
         $this->initCursor();
-        $this->selected = collect(is_array($default) ? $default : [$default]);
         $this->registerStyles();
+
+        if ($this->choices !== null) {
+            $this->items = $this->choices->choices();
+        }
+
         $this->displayedItems = $this->items;
+        $this->setSelectedFromDefaults();
+    }
+
+    protected function setSelectedFromDefaults()
+    {
+        $default = collect(is_array($this->default) ? $this->default : [$this->default]);
+
+        if ($this->choices !== null) {
+            $this->selected = $this->choices->getKeysFromValues($default);
+        } else {
+            $this->selected = $this->items->filter(fn ($i) => $default->contains($i))->keys();
+        }
     }
 
     public function setMultiple(bool $multiple = true): self
@@ -88,6 +106,11 @@ class Choices
         $this->writeAnsweredBlock($selectedItems->join(', '));
 
         $this->cursor->show();
+
+        if ($this->choices !== null) {
+            // Override $selectedItems with the values the user wanted to extract
+            $selectedItems = $this->choices->value($this->selected);
+        }
 
         return $this->multiple ? $selectedItems->toArray() : $selectedItems->first();
     }
@@ -135,6 +158,7 @@ class Choices
     {
         if ($this->query === '') {
             $this->displayedItems = $this->items;
+
             return;
         }
 
@@ -233,7 +257,7 @@ class Choices
             return $this->focusedIndex;
         }
 
-        if ($newIndex >= $this->items->count()) {
+        if ($newIndex >= $this->displayedItems->count()) {
             return $this->displayedItems->keys()->first() ?? -1;
         }
 

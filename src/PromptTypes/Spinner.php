@@ -3,15 +3,15 @@
 namespace Terminalia\PromptTypes;
 
 use Illuminate\Support\Str;
+use Spatie\Fork\Connection;
+use Spatie\Fork\Fork;
+use Symfony\Component\Console\Style\OutputStyle;
 use Terminalia\Enums\BlockSymbols;
 use Terminalia\Helpers\IsCancelable;
 use Terminalia\Helpers\SpinnerMessenger;
 use Terminalia\Helpers\Stty;
 use Terminalia\Helpers\UsesTheCursor;
 use Terminalia\Helpers\WritesOutput;
-use Spatie\Fork\Connection;
-use Spatie\Fork\Fork;
-use Symfony\Component\Console\Style\OutputStyle;
 
 class Spinner
 {

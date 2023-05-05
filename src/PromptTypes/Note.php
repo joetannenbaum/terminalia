@@ -2,9 +2,9 @@
 
 namespace Terminalia\PromptTypes;
 
+use Symfony\Component\Console\Style\OutputStyle;
 use Terminalia\Enums\BlockSymbols;
 use Terminalia\Helpers\WritesOutput;
-use Symfony\Component\Console\Style\OutputStyle;
 
 class Note
 {

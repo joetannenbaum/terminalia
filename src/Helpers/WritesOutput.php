@@ -2,8 +2,8 @@
 
 namespace Terminalia\Helpers;
 
-use Terminalia\Enums\BlockSymbols;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
+use Terminalia\Enums\BlockSymbols;
 
 trait WritesOutput
 {
