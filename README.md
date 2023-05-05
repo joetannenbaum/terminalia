@@ -116,6 +116,8 @@ $this->termError('Whoops! That did not go so well.');
 $this->termWarning('Heads up! Output may be *too* beautiful.');
 ```
 
+![Demo](examples/general-output.png)
+
 ## Filtering Choices
 
 If you have a longer list of choices, you can allow the user to filter them using the `filter` argument. This will allow the user to type in a search term and the list will be filtered to only show items that match the search term.

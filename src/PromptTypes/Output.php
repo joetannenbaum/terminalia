@@ -46,6 +46,5 @@ class Output
             $this->wrapInTag($blockSymbol->symbol() . ' ' . $lines->shift(), $tag)
         );
         $lines->each(fn ($line) => $this->writeInactiveBlock($this->wrapInTag($line, $tag)));
-        $this->writeInactiveBlock('');
     }
 }
