@@ -18,8 +18,6 @@ The UX of [Clack](https://github.com/natemoo-re/clack), the DX of [Laravel](http
 composer require joetannenbaum/terminalia
 ```
 
-## Usage
-
 This package implements a Console mixin, which should be automatically registered when the package is installed.
 
 If the service provider doesn't automatically register (i.e. if you are using [Laravel Zero](https://laravel-zero.com)), add the following to your `config/app.php` file:
@@ -30,6 +28,8 @@ If the service provider doesn't automatically register (i.e. if you are using [L
     Terminalia\Providers\TerminaliaServiceProvider::class,
 ],
 ```
+
+## Usage
 
 Once the service provider is registered, you'll have access to a couple of new methods within your Artisan commands:
 
@@ -158,7 +158,7 @@ It's important to note that the `task` runs in a forked process, so the task its
 
 ### Examples
 
-Simple:
+**Simple:**
 
 ```php
 $site = $this->termSpinner(
@@ -176,7 +176,7 @@ $site = $this->termSpinner(
 
 ![Demo](examples/spinner-simple.gif)
 
-Displays a variable message based on the result of the task:
+**Displays a variable final message based on the result of the task:**
 
 ```php
 $site = $this->termSpinner(
@@ -194,7 +194,7 @@ $site = $this->termSpinner(
 
 ![Demo](examples/spinner-custom-message.gif)
 
-Updates user of progress as it works:
+**Updates user of progress as it works:**
 
 ```php
 $site = $this->termSpinner(
@@ -217,7 +217,7 @@ $site = $this->termSpinner(
 
 ![Demo](examples/spinner-update-messages.gif)
 
-Sends users encouraging messages while they wait:
+**Sends users encouraging messages while they wait:**
 
 ```php
 $site = $this->termSpinner(
