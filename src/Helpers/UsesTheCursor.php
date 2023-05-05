@@ -13,7 +13,7 @@ trait UsesTheCursor
     protected function initCursor()
     {
         $this->cursor = new Cursor($this->output, $this->inputStream);
-        $this->bookmark('start', $this->getCurrentCursorPosition());
+        $this->bookmark('start');
     }
 
     protected function getCurrentCursorPosition()
