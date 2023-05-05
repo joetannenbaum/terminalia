@@ -1,6 +1,6 @@
 <?php
 
-namespace InteractiveConsole\Helpers;
+namespace Terminalia\Helpers;
 
 use Symfony\Component\Console\Cursor;
 

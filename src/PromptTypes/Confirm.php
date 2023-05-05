@@ -1,14 +1,14 @@
 <?php
 
-namespace InteractiveConsole\PromptTypes;
+namespace Terminalia\PromptTypes;
 
-use InteractiveConsole\Enums\BlockSymbols;
-use InteractiveConsole\Enums\ControlSequence;
-use InteractiveConsole\Enums\TerminalEvent;
-use InteractiveConsole\Helpers\IsCancelable;
-use InteractiveConsole\Helpers\ListensForInput;
-use InteractiveConsole\Helpers\UsesTheCursor;
-use InteractiveConsole\Helpers\WritesOutput;
+use Terminalia\Enums\BlockSymbols;
+use Terminalia\Enums\ControlSequence;
+use Terminalia\Enums\TerminalEvent;
+use Terminalia\Helpers\IsCancelable;
+use Terminalia\Helpers\ListensForInput;
+use Terminalia\Helpers\UsesTheCursor;
+use Terminalia\Helpers\WritesOutput;
 use Symfony\Component\Console\Style\OutputStyle;
 
 class Confirm

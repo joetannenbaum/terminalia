@@ -1,14 +1,14 @@
 <?php
 
-namespace InteractiveConsole\PromptTypes;
+namespace Terminalia\PromptTypes;
 
 use Illuminate\Support\Str;
-use InteractiveConsole\Enums\BlockSymbols;
-use InteractiveConsole\Helpers\IsCancelable;
-use InteractiveConsole\Helpers\SpinnerMessenger;
-use InteractiveConsole\Helpers\Stty;
-use InteractiveConsole\Helpers\UsesTheCursor;
-use InteractiveConsole\Helpers\WritesOutput;
+use Terminalia\Enums\BlockSymbols;
+use Terminalia\Helpers\IsCancelable;
+use Terminalia\Helpers\SpinnerMessenger;
+use Terminalia\Helpers\Stty;
+use Terminalia\Helpers\UsesTheCursor;
+use Terminalia\Helpers\WritesOutput;
 use Spatie\Fork\Connection;
 use Spatie\Fork\Fork;
 use Symfony\Component\Console\Style\OutputStyle;

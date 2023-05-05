@@ -1,8 +1,8 @@
 <?php
 
-namespace InteractiveConsole\Helpers;
+namespace Terminalia\Helpers;
 
-use InteractiveConsole\Enums\BlockSymbols;
+use Terminalia\Enums\BlockSymbols;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 trait WritesOutput

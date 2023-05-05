@@ -1,9 +1,9 @@
 <?php
 
-namespace InteractiveConsole\PromptTypes;
+namespace Terminalia\PromptTypes;
 
-use InteractiveConsole\Enums\BlockSymbols;
-use InteractiveConsole\Helpers\WritesOutput;
+use Terminalia\Enums\BlockSymbols;
+use Terminalia\Helpers\WritesOutput;
 use Symfony\Component\Console\Style\OutputStyle;
 
 class Note

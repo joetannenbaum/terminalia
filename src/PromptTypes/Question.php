@@ -1,13 +1,13 @@
 <?php
 
-namespace InteractiveConsole\PromptTypes;
+namespace Terminalia\PromptTypes;
 
-use InteractiveConsole\Enums\ControlSequence;
-use InteractiveConsole\Helpers\IsCancelable;
-use InteractiveConsole\Helpers\ListensForInput;
-use InteractiveConsole\Helpers\UsesTheCursor;
-use InteractiveConsole\Helpers\ValidatesInput;
-use InteractiveConsole\Helpers\WritesOutput;
+use Terminalia\Enums\ControlSequence;
+use Terminalia\Helpers\IsCancelable;
+use Terminalia\Helpers\ListensForInput;
+use Terminalia\Helpers\UsesTheCursor;
+use Terminalia\Helpers\ValidatesInput;
+use Terminalia\Helpers\WritesOutput;
 use Symfony\Component\Console\Style\OutputStyle;
 
 class Question

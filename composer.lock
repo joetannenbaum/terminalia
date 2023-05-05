@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "10121a9546303c337b27fd06bda8a940",
+    "content-hash": "c6eb6156b8356c8962be9e8db7549631",
     "packages": [
         {
             "name": "spatie/fork",

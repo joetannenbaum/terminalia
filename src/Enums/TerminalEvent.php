@@ -1,6 +1,6 @@
 <?php
 
-namespace InteractiveConsole\Enums;
+namespace Terminalia\Enums;
 
 enum TerminalEvent: string
 {

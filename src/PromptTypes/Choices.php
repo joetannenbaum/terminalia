@@ -1,17 +1,17 @@
 <?php
 
-namespace InteractiveConsole\PromptTypes;
+namespace Terminalia\PromptTypes;
 
 use Illuminate\Support\Collection;
-use InteractiveConsole\Enums\BlockSymbols;
-use InteractiveConsole\Enums\ControlSequence;
-use InteractiveConsole\Enums\TerminalEvent;
-use InteractiveConsole\Helpers\InputListener;
-use InteractiveConsole\Helpers\IsCancelable;
-use InteractiveConsole\Helpers\ListensForInput;
-use InteractiveConsole\Helpers\UsesTheCursor;
-use InteractiveConsole\Helpers\ValidatesInput;
-use InteractiveConsole\Helpers\WritesOutput;
+use Terminalia\Enums\BlockSymbols;
+use Terminalia\Enums\ControlSequence;
+use Terminalia\Enums\TerminalEvent;
+use Terminalia\Helpers\InputListener;
+use Terminalia\Helpers\IsCancelable;
+use Terminalia\Helpers\ListensForInput;
+use Terminalia\Helpers\UsesTheCursor;
+use Terminalia\Helpers\ValidatesInput;
+use Terminalia\Helpers\WritesOutput;
 use Symfony\Component\Console\Style\OutputStyle;
 
 class Choices
@@ -314,7 +314,9 @@ class Choices
         );
 
         if ($this->filterable) {
+            // Spacer block
             $this->writeBlock();
+
             if ($this->filtering) {
                 $this->writeBlock($this->keyboardShortcutHelp('esc', 'stop filtering'));
             } else {

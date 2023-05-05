@@ -1,6 +1,6 @@
 {
-    "name": "joetannenbaum/laravel-interactive-console",
-    "description": "A proof-of-concept for an interactive CLI script using Laravel",
+    "name": "joetannenbaum/terminalia",
+    "description": "Beautiful command line output for Laravel.",
     "type": "library",
     "require-dev": {
         "tightenco/duster": "^2.0"
@@ -8,7 +8,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "InteractiveConsole\\": "src/"
+            "Terminalia\\": "src/"
         }
     },
     "authors": [
@@ -23,7 +23,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "InteractiveConsole\\Providers\\InteractiveConsoleServiceProvider"
+                "Terminalia\\Providers\\TerminaliaServiceProvider"
             ]
         }
     }

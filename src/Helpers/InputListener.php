@@ -1,9 +1,9 @@
 <?php
 
-namespace InteractiveConsole\Helpers;
+namespace Terminalia\Helpers;
 
-use InteractiveConsole\Enums\ControlSequence;
-use InteractiveConsole\Enums\TerminalEvent;
+use Terminalia\Enums\ControlSequence;
+use Terminalia\Enums\TerminalEvent;
 
 class InputListener
 {

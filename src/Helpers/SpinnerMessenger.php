@@ -1,6 +1,6 @@
 <?php
 
-namespace InteractiveConsole\Helpers;
+namespace Terminalia\Helpers;
 
 use Spatie\Fork\Connection;
 

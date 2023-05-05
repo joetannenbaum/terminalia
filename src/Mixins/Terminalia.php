@@ -1,19 +1,19 @@
 <?php
 
-namespace InteractiveConsole\Mixins;
+namespace Terminalia\Mixins;
 
-use InteractiveConsole\PromptTypes\Choices;
-use InteractiveConsole\PromptTypes\Confirm;
-use InteractiveConsole\PromptTypes\Intro;
-use InteractiveConsole\PromptTypes\Note;
-use InteractiveConsole\PromptTypes\Outro;
-use InteractiveConsole\PromptTypes\ProgressBar;
-use InteractiveConsole\PromptTypes\Question;
-use InteractiveConsole\PromptTypes\Spinner;
+use Terminalia\PromptTypes\Choices;
+use Terminalia\PromptTypes\Confirm;
+use Terminalia\PromptTypes\Intro;
+use Terminalia\PromptTypes\Note;
+use Terminalia\PromptTypes\Outro;
+use Terminalia\PromptTypes\ProgressBar;
+use Terminalia\PromptTypes\Question;
+use Terminalia\PromptTypes\Spinner;
 
-class InteractiveConsole
+class Terminalia
 {
-    public function interactiveChoice()
+    public function termChoice()
     {
         return function (
             string $question,
@@ -49,7 +49,7 @@ class InteractiveConsole
         };
     }
 
-    public function interactiveConfirm()
+    public function termConfirm()
     {
         return function (string $question, $default = false) {
             $helper = new Confirm(
@@ -64,7 +64,7 @@ class InteractiveConsole
         };
     }
 
-    public function interactiveAsk()
+    public function termAsk()
     {
         return function (string $question, string $default = null, $rules = null, bool $hidden = false) {
             $helper = new Question(
@@ -84,7 +84,7 @@ class InteractiveConsole
         };
     }
 
-    public function spinner()
+    public function termSpinner()
     {
         return function (
             string $title,
@@ -106,14 +106,14 @@ class InteractiveConsole
         };
     }
 
-    public function withInteractiveProgressBar()
+    public function withTermProgressBar()
     {
         return function (
             iterable $items,
             callable $callback,
             ?string $title = null,
         ) {
-            $progress = $this->createInteractiveProgressBar(count($items), $title);
+            $progress = $this->createTermProgressBar(count($items), $title);
 
             $progress->start();
 
@@ -126,7 +126,7 @@ class InteractiveConsole
         };
     }
 
-    public function createInteractiveProgressBar()
+    public function createTermProgressBar()
     {
         return function (
             int $total,
@@ -144,21 +144,21 @@ class InteractiveConsole
         };
     }
 
-    public function note()
+    public function termNote()
     {
         return function (string|array $text, string $title = '') {
             (new Note($this->output, $text, $title))->display();
         };
     }
 
-    public function intro()
+    public function termIntro()
     {
         return function (string $text) {
             (new Intro($this->output, $text))->display();
         };
     }
 
-    public function outro()
+    public function termOutro()
     {
         return function (string $text) {
             (new Outro($this->output, $text))->display();

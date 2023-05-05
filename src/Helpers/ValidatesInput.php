@@ -1,6 +1,6 @@
 <?php
 
-namespace InteractiveConsole\Helpers;
+namespace Terminalia\Helpers;
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
