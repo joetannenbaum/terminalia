@@ -10,7 +10,7 @@ The UX of [Clack](https://github.com/natemoo-re/clack), the DX of [Laravel](http
 
 ## Demo
 
-![Demo](examples/full-v2.gif)
+![Demo](examples/full-v3.gif)
 
 ## Installation
 
