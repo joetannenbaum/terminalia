@@ -324,3 +324,5 @@ $this->termNote(
     ],
 );
 ```
+
+![Demo](examples/note.png)
