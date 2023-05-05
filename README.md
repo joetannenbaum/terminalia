@@ -99,6 +99,23 @@ The `rules` argument of these methods uses Laravel's built-in validator, so it a
 
 **Note:** If you're using validation within a [Laravel Zero](https://laravel-zero.com) app, remember to register your `ValidationServiceProvider::class` and `TranslationServiceProvider::class` in your `config/app.php` file and also include a `lang` directory in your project root.
 
+## General Output
+
+Terminalia provides methods for outputting `info`, `comment`, `warning`, and `error` messages to the output consistent with the rest of its output:
+
+```php
+$this->termInfo('Here is the URL: https://bellows.dev');
+
+$this->termComment([
+    'This is a multi-line comment! I have a lot to say, and it is easier to write as an array.',
+    'Here is the second part of what I have to say. Not to worry, Terminalia will handle all of the formatting.',
+]);
+
+$this->termError('Whoops! That did not go so well.');
+
+$this->termWarning('Heads up! Output may be *too* beautiful.');
+```
+
 ## Filtering Choices
 
 If you have a longer list of choices, you can allow the user to filter them using the `filter` argument. This will allow the user to type in a search term and the list will be filtered to only show items that match the search term.

@@ -6,6 +6,7 @@ use Terminalia\PromptTypes\Choices;
 use Terminalia\PromptTypes\Confirm;
 use Terminalia\PromptTypes\Intro;
 use Terminalia\PromptTypes\Note;
+use Terminalia\PromptTypes\Output;
 use Terminalia\PromptTypes\Outro;
 use Terminalia\PromptTypes\ProgressBar;
 use Terminalia\PromptTypes\Question;
@@ -162,6 +163,34 @@ class Terminalia
     {
         return function (string $text) {
             (new Outro($this->output, $text))->display();
+        };
+    }
+
+    public function termComment()
+    {
+        return function (string|array $text) {
+            (new Output($this->output, $text, 'comment'))->display();
+        };
+    }
+
+    public function termInfo()
+    {
+        return function (string|array $text) {
+            (new Output($this->output, $text, 'info'))->display();
+        };
+    }
+
+    public function termWarning()
+    {
+        return function (string|array $text) {
+            (new Output($this->output, $text, 'warning'))->display();
+        };
+    }
+
+    public function termError()
+    {
+        return function (string|array $text) {
+            (new Output($this->output, $text, 'error'))->display();
         };
     }
 }
