@@ -2,6 +2,12 @@
 
 The UX of [Clack](https://github.com/natemoo-re/clack), the DX of [Laravel](https://laravel.com) for your Artisan commands.
 
+-   [Features](#features)
+-   [Demo](#demo)
+-   [Installation](#installation)
+-   [Retrieving Input](#retrieving-input)
+-   [Writing Output](#writing-output)
+
 ## Features
 
 -   Inline input validation using Laravel's built-in validator
@@ -29,41 +35,52 @@ If the service provider doesn't automatically register (i.e. if you are using [L
 ],
 ```
 
-## Usage
+## Retrieving Input
 
-Once the service provider is registered, you'll have access to a couple of new methods within your Artisan commands:
+### Input Validation
+
+The `rules` argument of these methods uses [Laravel's built-in validator](https://laravel.com/docs/validation#available-validation-rules), so it accepts anything you are able to pass to `Validator::make`.
+
+**Note:** If you're using validation within a [Laravel Zero](https://laravel-zero.com) app, remember to register your `ValidationServiceProvider::class` and `TranslationServiceProvider::class` in your `config/app.php` file and also include a `lang` directory in your project root.
+
+### `termAsk`
+
+The `termAsk` method prompts the user for input and return the response. It accepts the following arguments:
+
+-   `question` (string): The question to ask the user
+-   `rules` (string|array): An array of validation rules to apply to the response
+-   `hidden` (bool): Whether or not to hide the user's input (useful for passwords)
+-   `default` (string): The default value
 
 ```php
-$this->termIntro("Welcome! Let's get started.");
-
-$bigAnswer = $this->termAsk(
-    question: 'The answer to the life, the universe, and everything is:',
-    rules: ['required', 'numeric'],
+$answer = $this->termAsk(
+    question: 'What is your favorite color?',
+    rules: ['required'],
 );
 
-$dontTell = $this->termAsk(
-    question: 'Tell me a secret:',
+$password = $this->termAsk(
+    question: 'What is your password?',
     rules: ['required'],
     hidden: true,
 );
+```
 
-$spun = $this->termSpinner(
-    title: 'Processing',
-    task: function (SpinnerMessenger $messenger) {
-        sleep(2);
-        $messenger->send("Still cookin'");
-        sleep(2);
-        $messenger->send('Almost there');
-        sleep(2);
+### `termChoice`
 
-        return null;
-    },
-    message: 'Secret has been processed!'
-);
+The `termChoice` method prompts the user to select one or more items from a list of choices. It accepts the following arguments:
 
-$seuss = $this->termChoice(
-    question: 'Pick a fish, any fish:',
-    items: ['one fish', 'two fish', 'red fish', 'blue fish'],
+-   `question` (string): The question to ask the user
+-   `items` (array|`Collection`|`Helpers\Choices`): An array of choices to display to the user
+-   `multiple` (bool): Whether or not to allow the user to select multiple items
+-   `rules` (string|array): An array of validation rules to apply to the response
+-   `filterable` (bool): Whether or not to allow the user to filter the choices
+-   `minFilterLength` (int, default is `5`): The minimum number of items in the list before filtering is enabled
+-   `default` (string|array): The default value(s)
+
+```php
+$answer = $this->termChoice(
+    question: 'What is your favorite color?',
+    items: ['red', 'green', 'blue'],
     rules: ['required'],
 );
 
@@ -74,55 +91,20 @@ $favoriteThings = $this->termChoice(
         'whiskers on kittens',
         'bright copper kettles',
         'warm woolen mittens',
+        'brown paper packages tied up with strings',
+        'cream colored ponies',
+        'crisp apple strudels',
+        'doorbells',
+        'sleigh bells',
+        'schnitzel with noodles',
     ],
     multiple: true,
     rules: ['required'],
+    filterable: true,
 );
-
-$confirmed = $this->termConfirm(
-    question: 'Everything look good?',
-);
-
-$this->termNote(
-    'You really did it. We are so proud of you. Thank you for telling us all about yourself. We can\'t wait to get to know you better.',
-    'Congratulations',
-);
-
-$this->termOutro("Thank you for your response! Have a great day.");
 ```
 
-![Demo](examples/full-v2.gif)
-
-## Input Validation
-
-The `rules` argument of these methods uses Laravel's built-in validator, so it accepts anything you are able to pass to `Validator::make`.
-
-**Note:** If you're using validation within a [Laravel Zero](https://laravel-zero.com) app, remember to register your `ValidationServiceProvider::class` and `TranslationServiceProvider::class` in your `config/app.php` file and also include a `lang` directory in your project root.
-
-## General Output
-
-Terminalia provides methods for outputting `info`, `comment`, `warning`, and `error` messages to the output consistent with the rest of its output:
-
-```php
-$this->termInfo('Here is the URL: https://bellows.dev');
-
-$this->termComment([
-    'This is a multi-line comment! I have a lot to say, and it is easier to write as an array.',
-    'Here is the second part of what I have to say. Not to worry, Terminalia will handle all of the formatting.',
-]);
-
-$this->termError('Whoops! That did not go so well.');
-
-$this->termWarning('Heads up! Output may be *too* beautiful.');
-```
-
-![Demo](examples/general-output.png)
-
-## Choices Helper
-
-The `termChoice` method allows you to prompt the user to select one or more items from a list of choices. It will return the selected item(s) as an array.
-
-Instead of just passing a simple array, you can choose to pass in a nested array or collection using the `Choices` helper. This allows you to specify a label and a value for each item in the list. The label will be displayed to the user, and the value(s) will be returned when the user selects the item.
+Instead of just passing a simple array as the `items` argument, you can choose to pass in a nested array or collection using the `Choices` helper. This allows you to specify a label and a value for each item in the list. The label will be displayed to the user, and the value(s) will be returned when the user selects the item.
 
 ```php
 use Terminalia\Helpers\Choices;
@@ -158,64 +140,98 @@ $user = $this->termChoice(
 );
 ```
 
-## Filtering Choices
+### `termConfirm`
 
-If you have a longer list of choices, you can allow the user to filter them using the `filter` argument. This will allow the user to type in a search term and the list will be filtered to only show items that match the search term.
+The `termConfirm` method prompts the user to confirm a question. It accepts the following arguments:
+
+-   `question` (string): The question to ask the user
+-   `default` (bool): The default answer to the question
 
 ```php
-$favoriteThings = $this->termChoice(
-    question: 'Which are your favorite things:',
-    items: [
-        'raindrops on roses',
-        'whiskers on kittens',
-        'bright copper kettles',
-        'warm woolen mittens',
-        'brown paper packages tied up with strings',
-        'cream colored ponies',
-        'crisp apple strudels',
-        'doorbells',
-        'sleigh bells',
-        'schnitzel with noodles',
-    ],
-    multiple: true,
-    rules: ['required'],
-    filterable: true,
+$answer = $this->termConfirm(
+    question: 'Are you sure you want to do this?',
 );
 ```
 
-![Demo](examples/choice-filtering.gif)
+## Writing Output
 
-By default, the `filter` argument will only have an effect if you have over 5 items in your list. You can change this by passing a different number to the `minFilterLength` argument:
+### `termIntro`
+
+The `termIntro` method writes an intro message to the output. It accepts the following arguments:
+
+-   `text` (string): The message to write to the output
 
 ```php
-$favoriteThings = $this->termChoice(
-    question: 'Which are your favorite things:',
-    items: [
-        'raindrops on roses',
-        'whiskers on kittens',
-        'bright copper kettles',
-        'warm woolen mittens',
-        'brown paper packages tied up with strings',
-        'cream colored ponies',
-        'crisp apple strudels',
-        'doorbells',
-        'sleigh bells',
-        'schnitzel with noodles',
+$this->termIntro("Welcome! Let's get started.");
+```
+
+### `termOutro`
+
+The `termOutro` method writes an outro message to the output. It accepts the following arguments:
+
+-   `text` (string): The message to write to the output
+
+```php
+$this->termOutro('All set!');
+```
+
+### `termInfo`, `termComment`, `termError`, `termWarning`
+
+Consistent with Laravel's built-in output methods, Terminalia provides methods for writing output in different colors with cohesive styling. They accept the following arguments:
+
+-   `text` (string|array): The message to write to the output
+
+```php
+$this->termInfo('Here is the URL: https://bellows.dev');
+
+$this->termComment([
+    'This is a multi-line comment! I have a lot to say, and it is easier to write as an array.',
+    'Here is the second part of what I have to say. Not to worry, Terminalia will handle all of the formatting.',
+]);
+
+$this->termError('Whoops! That did not go so well.');
+
+$this->termWarning('Heads up! Output may be *too* beautiful.');
+```
+
+![Demo](examples/general-output.png)
+
+### `termNote`
+
+The `termNote` method allows you to display a longer message to the user. You can include an optional title as the second argument, if you have multiple lines you can optionally pass in an array of strings as the first argument.
+
+```php
+// Regular note
+$this->termNote(
+    "You really did it. We are so proud of you. Thank you for telling us all about yourself. We can't wait to get to know you better.",
+    'Congratulations',
+);
+
+// Multiple lines via an array
+$this->termNote(
+    [
+        'You really did it. We are so proud of you. Thank you for telling us all about yourself.',
+        "We can't wait to get to know you better."
     ],
-    multiple: true,
-    rules: ['required'],
-    filterable: true,
-    minFilterLength: 3,
+    'Congratulations',
+);
+
+// No title
+$this->termNote(
+    [
+        'You really did it. We are so proud of you. Thank you for telling us all about yourself.',
+        "We can't wait to get to know you better."
+    ],
 );
 ```
 
-## Spinner
+![Demo](examples/note.png)
 
-The `spinner` method allows you to show a spinner while an indefinite process is running. It allows customization to you can inform your user of what's happening as the process runs. The result of the spinner will be whatever is returned from the `task` argument.
+### `termSpinner`
 
-It's important to note that the `task` runs in a forked process, so the task itself shouldn't create any side effects in your application. It should just process something and return a result.
+The `termSpinner` method allows you to show a spinner while an indefinite process is running. It allows customization to you can inform your user of what's happening as the process runs. The result of the spinner will be whatever is returned from the `task` argument.
 
-### Examples
+**Important:** It's important to note that the `task` runs in a forked process, so the task itself shouldn't create any side effects in your application. It should just process something and return a result.
 
 **Simple:**
 
@@ -300,9 +316,9 @@ $site = $this->termSpinner(
 
 ![Demo](examples/spinner-long-processing-messages.gif)
 
-## Progress Bars
+### Progress Bars
 
-Progress bars have a very similar API to [Laravel console progress bars](https://laravel.com/docs/artisan#progress-bars), with one small addition: You can pass in an optional title for the bar.
+Progress bars have a very similar API to [Laravel console progress bars](https://laravel.com/docs/artisan#progress-bars) with one small addition: You can pass in an optional title for the bar.
 
 ```php
 $this->withTermProgressBar(collect(range(1, 20)), function () {
@@ -335,34 +351,3 @@ $this->withTermProgressBar(collect(range(1, 20)), function () {
 ```
 
 ![Demo](examples/progress-without-title.gif)
-
-## Note
-
-The `note` method allows you to display a message to the user. You can include an optional title as the second argument, and if you have multiple lines you can pass in an array of strings as the first argument.
-
-```php
-// Regular note
-$this->termNote(
-    "You really did it. We are so proud of you. Thank you for telling us all about yourself. We can't wait to get to know you better.",
-    'Congratulations',
-);
-
-// Multiple lines via an array
-$this->termNote(
-    [
-        'You really did it. We are so proud of you. Thank you for telling us all about yourself.',
-        "We can't wait to get to know you better."
-    ],
-    'Congratulations',
-);
-
-// No title
-$this->termNote(
-    [
-        'You really did it. We are so proud of you. Thank you for telling us all about yourself.',
-        "We can't wait to get to know you better."
-    ],
-);
-```
-
-![Demo](examples/note.png)
