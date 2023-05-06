@@ -118,6 +118,46 @@ $this->termWarning('Heads up! Output may be *too* beautiful.');
 
 ![Demo](examples/general-output.png)
 
+## Choices Helper
+
+The `termChoice` method allows you to prompt the user to select one or more items from a list of choices. It will return the selected item(s) as an array.
+
+Instead of just passing a simple array, you can choose to pass in a nested array or collection using the `Choices` helper. This allows you to specify a label and a value for each item in the list. The label will be displayed to the user, and the value(s) will be returned when the user selects the item.
+
+```php
+use Terminalia\Helpers\Choices;
+
+$users = User::all();
+
+// Choices will display the user's name and return a User model
+$user = $this->termChoice(
+    question: 'Which user would you like to edit?',
+    items: Choices::from($users, 'name'),
+);
+
+// Choices will display the user's name and return the user ID
+$user = $this->termChoice(
+    question: 'Which user would you like to edit?',
+    items: Choices::from($users, 'name', 'id'),
+);
+
+// Choices will be displayed with the user's full name, will return a User model
+$user = $this->termChoice(
+    question: 'Which user would you like to edit?',
+    items: Choices::from($users, fn($user) => "{$user->firstName} {$user->lastName}"),
+);
+
+// Choices will be displayed with the user's full name, will return the user ID
+$user = $this->termChoice(
+    question: 'Which user would you like to edit?',
+    items: Choices::from(
+        $users,
+        fn($user) => "{$user->firstName} {$user->lastName}",
+        fn($user) => $user->id,
+    ),
+);
+```
+
 ## Filtering Choices
 
 If you have a longer list of choices, you can allow the user to filter them using the `filter` argument. This will allow the user to type in a search term and the list will be filtered to only show items that match the search term.
