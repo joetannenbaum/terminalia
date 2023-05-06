@@ -8,11 +8,14 @@ class Choices
 {
     protected Collection $items;
 
+    protected bool $returnAsArray = false;
+
     public function __construct(
         iterable $items,
         protected mixed $displayKey,
         protected mixed $returnKey = null,
     ) {
+        $this->returnAsArray = is_array($items);
         $this->items = collect($items);
     }
 
@@ -31,6 +34,11 @@ class Choices
         }
 
         return $this->items->map($this->displayKey);
+    }
+
+    public function returnAsArray(): bool
+    {
+        return $this->returnAsArray;
     }
 
     public function getKeysFromValues(Collection $values): Collection

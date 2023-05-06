@@ -77,6 +77,8 @@ The `termChoice` method prompts the user to select one or more items from a list
 -   `minFilterLength` (int, default is `5`): The minimum number of items in the list before filtering is enabled
 -   `default` (string|array): The default value(s)
 
+If `multiple` is `true` and you pass a `Collection` as the `items` argument, the `items` will be returned as a `Collection` as well, otherwise an array will be returned.
+
 ```php
 $answer = $this->termChoice(
     question: 'What is your favorite color?',

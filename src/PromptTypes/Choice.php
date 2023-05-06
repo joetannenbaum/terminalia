@@ -43,6 +43,7 @@ class Choice
         protected Collection|Choices $items,
         protected string|array $default = [],
         protected ?Choices $choices = null,
+        protected $returnAsArray = false,
         protected $inputStream = null,
     ) {
         $this->inputStream = $this->inputStream ?? fopen('php://stdin', 'rb');
@@ -101,7 +102,11 @@ class Choice
             $selectedItems = $this->choices->value($this->selected);
         }
 
-        return $this->multiple ? $selectedItems->toArray() : $selectedItems->first();
+        if (!$this->multiple) {
+            return $selectedItems->first();
+        }
+
+        return $this->returnAsArray ? $selectedItems->toArray() : $selectedItems;
     }
 
     public function onCancel(string $message = 'Canceled'): void
