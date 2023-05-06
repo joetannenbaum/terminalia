@@ -57,17 +57,6 @@ class Choice
         $this->setSelectedFromDefaults();
     }
 
-    protected function setSelectedFromDefaults()
-    {
-        $default = collect(is_array($this->default) ? $this->default : [$this->default]);
-
-        if ($this->choices !== null) {
-            $this->selected = $this->choices->getKeysFromValues($default);
-        } else {
-            $this->selected = $this->items->filter(fn ($i) => $default->contains($i))->keys();
-        }
-    }
-
     public function setMultiple(bool $multiple = true): self
     {
         $this->multiple = $multiple;
@@ -133,6 +122,17 @@ class Choice
         $this->writeCanceledBlock($message);
 
         exit;
+    }
+
+    protected function setSelectedFromDefaults()
+    {
+        $default = collect(is_array($this->default) ? $this->default : [$this->default]);
+
+        if ($this->choices !== null) {
+            $this->selected = $this->choices->getKeysFromValues($default);
+        } else {
+            $this->selected = $this->items->filter(fn ($i) => $default->contains($i))->keys();
+        }
     }
 
     protected function registerListeners()
