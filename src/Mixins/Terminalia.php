@@ -107,7 +107,7 @@ class Terminalia
 
             $this->trap(SIGINT, fn () => $helper->onCancel());
 
-            $helper->spin();
+            return $helper->spin();
         };
     }
 
