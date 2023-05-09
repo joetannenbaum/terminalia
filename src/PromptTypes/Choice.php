@@ -120,7 +120,7 @@ class Choice
         exit;
     }
 
-    protected function registerListeners()
+    protected function registerListeners(): void
     {
         $listener = $this->inputListener();
 
@@ -133,13 +133,13 @@ class Choice
         $listener->listen();
     }
 
-    protected function setQuery(string $query)
+    protected function setQuery(string $query): void
     {
         $this->query = $query;
         $this->setDisplayedItems();
     }
 
-    protected function setDisplayedItems()
+    protected function setDisplayedItems(): void
     {
         if ($this->query === '') {
             $this->displayedItems = $this->items->choices();
@@ -152,7 +152,7 @@ class Choice
         );
     }
 
-    protected function registerCommonListeners(InputListener $listener)
+    protected function registerCommonListeners(InputListener $listener): void
     {
         $listener->on([ControlSequence::UP, ControlSequence::LEFT], function () {
             $this->setRelativeFocusedIndex(-1);
@@ -173,7 +173,7 @@ class Choice
         $listener->afterKeyPress($this->writeChoices(...));
     }
 
-    protected function registerFilterListeners(InputListener $defaultListener)
+    protected function registerFilterListeners(InputListener $defaultListener): void
     {
         $filterListener = $this->inputListener();
 
@@ -288,7 +288,7 @@ class Choice
         }
     }
 
-    protected function writeChoices()
+    protected function writeChoices(): void
     {
         $this->cursor->hide();
         $this->clearContentAfterTitle();
