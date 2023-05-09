@@ -5,7 +5,7 @@ namespace Terminalia\PromptTypes;
 use Illuminate\Support\Str;
 use Spatie\Fork\Connection;
 use Spatie\Fork\Fork;
-use Symfony\Component\Console\Style\OutputStyle;
+use Symfony\Component\Console\Output\OutputInterface;
 use Terminalia\Enums\BlockSymbols;
 use Terminalia\Helpers\IsCancelable;
 use Terminalia\Helpers\SpinnerMessenger;
@@ -28,7 +28,7 @@ class Spinner
     protected string $stopKey;
 
     public function __construct(
-        protected OutputStyle $output,
+        protected OutputInterface $output,
         protected string $title,
         protected $task,
         protected mixed $message = null,

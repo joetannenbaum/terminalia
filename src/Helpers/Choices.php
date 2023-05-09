@@ -10,6 +10,8 @@ class Choices
 
     protected bool $returnAsArray = false;
 
+    protected Collection $cachedChoices;
+
     public function __construct(
         iterable $items,
         protected mixed $displayKey,
@@ -21,7 +23,7 @@ class Choices
 
     public static function from(
         iterable $items,
-        string|callable $displayKey,
+        string|callable $displayKey = null,
         string|callable $returnKey = null
     ): static {
         return new static($items, $displayKey, $returnKey);
@@ -29,11 +31,25 @@ class Choices
 
     public function choices(): Collection
     {
-        if (is_string($this->displayKey)) {
-            return $this->items->pluck($this->displayKey);
+        if (isset($this->cachedChoices)) {
+            return $this->cachedChoices;
         }
 
-        return $this->items->map($this->displayKey);
+        if ($this->displayKey === null) {
+            $this->cachedChoices = $this->items;
+
+            return $this->cachedChoices;
+        }
+
+        if (is_string($this->displayKey)) {
+            $this->cachedChoices = $this->items->pluck($this->displayKey);
+
+            return $this->cachedChoices;
+        }
+
+        $this->cachedChoices = $this->items->map($this->displayKey);
+
+        return $this->cachedChoices;
     }
 
     public function returnAsArray(): bool
@@ -41,9 +57,11 @@ class Choices
         return $this->returnAsArray;
     }
 
-    public function getKeysFromValues(Collection $values): Collection
+    public function getSelectedFromDefault(iterable|string $default): Collection
     {
-        return $this->value($this->items->keys())->filter(fn ($i) => $values->contains($i))->keys();
+        $default = collect(is_array($default) ? $default : [$default]);
+
+        return $this->value($this->items->keys())->filter(fn ($i) => $default->contains($i))->keys();
     }
 
     public function value(Collection $indexes): mixed

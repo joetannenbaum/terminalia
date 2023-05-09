@@ -2,7 +2,7 @@
 
 namespace Terminalia\PromptTypes;
 
-use Symfony\Component\Console\Style\OutputStyle;
+use Symfony\Component\Console\Output\OutputInterface;
 use Terminalia\Enums\BlockSymbols;
 use Terminalia\Enums\ControlSequence;
 use Terminalia\Enums\TerminalEvent;
@@ -18,7 +18,7 @@ class Confirm
     protected bool $answer;
 
     public function __construct(
-        protected OutputStyle $output,
+        protected OutputInterface $output,
         protected string $question,
         protected bool $default = false,
         protected $inputStream = null,

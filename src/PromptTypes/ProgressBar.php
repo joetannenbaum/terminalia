@@ -2,7 +2,7 @@
 
 namespace Terminalia\PromptTypes;
 
-use Symfony\Component\Console\Style\OutputStyle;
+use Symfony\Component\Console\Output\OutputInterface;
 use Terminalia\Enums\BlockSymbols;
 use Terminalia\Helpers\IsCancelable;
 use Terminalia\Helpers\Stty;
@@ -22,7 +22,7 @@ class ProgressBar
     protected Stty $stty;
 
     public function __construct(
-        protected OutputStyle $output,
+        protected OutputInterface $output,
         protected int $total,
         protected ?string $title = null,
         protected $inputStream = null,

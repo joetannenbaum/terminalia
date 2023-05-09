@@ -30,9 +30,7 @@ class Terminalia
             $helper = new Choice(
                 output: $this->output,
                 question: $question,
-                items: collect($items instanceof Choices ? [] : $items),
-                returnAsArray: is_array($items) || ($items instanceof Choices && $items->returnAsArray()),
-                choices: $items instanceof Choices ? $items : null,
+                items: $items instanceof Choices ? $items : Choices::from($items),
                 default: $default ?? [],
             );
 

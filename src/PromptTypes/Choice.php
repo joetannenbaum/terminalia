@@ -3,7 +3,7 @@
 namespace Terminalia\PromptTypes;
 
 use Illuminate\Support\Collection;
-use Symfony\Component\Console\Style\OutputStyle;
+use Symfony\Component\Console\Output\OutputInterface;
 use Terminalia\Enums\BlockSymbols;
 use Terminalia\Enums\ControlSequence;
 use Terminalia\Enums\TerminalEvent;
@@ -38,24 +38,19 @@ class Choice
     protected array $defaultCursorPosition;
 
     public function __construct(
-        protected OutputStyle $output,
+        protected OutputInterface $output,
         protected string $question,
-        protected Collection|Choices $items,
-        protected string|array $default = [],
-        protected ?Choices $choices = null,
-        protected $returnAsArray = false,
+        protected Choices $items,
+        protected string|iterable $default = [],
         protected $inputStream = null,
     ) {
         $this->inputStream = $this->inputStream ?? fopen('php://stdin', 'rb');
         $this->initCursor();
         $this->registerStyles();
 
-        if ($this->choices !== null) {
-            $this->items = $this->choices->choices();
-        }
+        $this->displayedItems = $this->items->choices();
 
-        $this->displayedItems = $this->items;
-        $this->setSelectedFromDefaults();
+        $this->selected = $this->items->getSelectedFromDefault($default);
     }
 
     public function setMultiple(bool $multiple = true): self
@@ -89,24 +84,20 @@ class Choice
             return $this->prompt();
         }
 
-        $selectedItems = $this->selected->map(fn ($i) => $this->items[$i]);
-
         $this->clearCurrentOutput();
-
-        $this->writeAnsweredBlock($selectedItems->join(', '));
+        $this->writeAnsweredBlock(
+            $this->selected->map(fn ($i) => $this->items[$i])->join(', ')
+        );
 
         $this->cursor->show();
 
-        if ($this->choices !== null) {
-            // Override $selectedItems with the values the user wanted to extract
-            $selectedItems = $this->choices->value($this->selected);
-        }
+        $selectedValues = $this->items->value($this->selected);
 
         if (!$this->multiple) {
-            return $selectedItems->first();
+            return $selectedValues->first();
         }
 
-        return $this->returnAsArray ? $selectedItems->toArray() : $selectedItems;
+        return $this->items->returnAsArray() ? $selectedValues->toArray() : $selectedValues;
     }
 
     public function onCancel(string $message = 'Canceled'): void
@@ -119,7 +110,7 @@ class Choice
         if ($this->selected->count() > 0) {
             $this->writeBlock(
                 $this->dim(
-                    $this->selected->map(fn ($i) => $this->items->get($i))->join(', '),
+                    $this->selected->map(fn ($i) => $this->items->choices()->get($i))->join(', '),
                 ),
             );
         }
@@ -127,17 +118,6 @@ class Choice
         $this->writeCanceledBlock($message);
 
         exit;
-    }
-
-    protected function setSelectedFromDefaults()
-    {
-        $default = collect(is_array($this->default) ? $this->default : [$this->default]);
-
-        if ($this->choices !== null) {
-            $this->selected = $this->choices->getKeysFromValues($default);
-        } else {
-            $this->selected = $this->items->filter(fn ($i) => $default->contains($i))->keys();
-        }
     }
 
     protected function registerListeners()
@@ -162,12 +142,12 @@ class Choice
     protected function setDisplayedItems()
     {
         if ($this->query === '') {
-            $this->displayedItems = $this->items;
+            $this->displayedItems = $this->items->choices();
 
             return;
         }
 
-        $this->displayedItems = $this->items->filter(
+        $this->displayedItems = $this->items->choices()->filter(
             fn ($item) => str_contains(strtolower($item), strtolower($this->query))
         );
     }

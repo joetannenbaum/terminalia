@@ -2,7 +2,7 @@
 
 namespace Terminalia\PromptTypes;
 
-use Symfony\Component\Console\Style\OutputStyle;
+use Symfony\Component\Console\Output\OutputInterface;
 use Terminalia\Enums\BlockSymbols;
 use Terminalia\Helpers\WritesOutput;
 
@@ -13,7 +13,7 @@ class Intro
     protected bool $answer;
 
     public function __construct(
-        protected OutputStyle $output,
+        protected OutputInterface $output,
         protected string $text,
     ) {
         $this->registerStyles();

@@ -3,7 +3,10 @@
     "description": "Beautiful command line output for Laravel.",
     "type": "library",
     "require-dev": {
-        "tightenco/duster": "^2.0"
+        "illuminate/collections": "^10.10",
+        "tightenco/duster": "^2.0",
+        "pestphp/pest": "^2.6",
+        "illuminate/support": "^10.10"
     },
     "license": "MIT",
     "autoload": {
@@ -18,13 +21,19 @@
         }
     ],
     "require": {
-        "spatie/fork": "^1.1"
+        "spatie/fork": "^1.1",
+        "illuminate/contracts": "^10.10"
     },
     "extra": {
         "laravel": {
             "providers": [
                 "Terminalia\\Providers\\TerminaliaServiceProvider"
             ]
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
         }
     }
 }

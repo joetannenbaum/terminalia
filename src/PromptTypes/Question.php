@@ -2,7 +2,7 @@
 
 namespace Terminalia\PromptTypes;
 
-use Symfony\Component\Console\Style\OutputStyle;
+use Symfony\Component\Console\Output\OutputInterface;
 use Terminalia\Enums\ControlSequence;
 use Terminalia\Helpers\IsCancelable;
 use Terminalia\Helpers\ListensForInput;
@@ -19,7 +19,7 @@ class Question
     protected string $answer = '';
 
     public function __construct(
-        protected OutputStyle $output,
+        protected OutputInterface $output,
         protected string $question,
         protected ?string $default = null,
         protected bool $hidden = false,
