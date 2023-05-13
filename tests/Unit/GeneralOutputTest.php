@@ -1,6 +1,7 @@
 <?php
 
 use Terminalia\PromptTypes\Intro;
+use Terminalia\PromptTypes\Note;
 use Terminalia\PromptTypes\Output;
 use Terminalia\PromptTypes\Outro;
 use Terminalia\Tests\Doubles\OutputFake;
@@ -49,4 +50,58 @@ test('can write a comment', function () {
     $intro->display();
 
     $this->fake->assertWritten(['<dim>│</dim> ', '<comment>● This is a comment</comment>']);
+});
+
+test('can write a note', function () {
+    $intro = new Note($this->fake, 'This is a note', 'This is the note title');
+    $intro->display();
+
+    $this->fake->assertWritten([
+        '<dim>│</dim> ',
+        '<info>◇</info> This is the note title  <dim>───╮</dim>',
+        '<dim>│</dim> <dim>                           │</dim>',
+        '<dim>│</dim> <dim>                           │</dim>',
+        '<dim>│</dim> <dim> This is a note            │</dim>',
+        '<dim>│</dim> <dim>                           │</dim>',
+        '<dim>│</dim> <dim>                           │</dim>',
+        '<dim>├────────────────────────────╯</dim>',
+    ]);
+});
+
+test('can write a note without a title', function () {
+    $intro = new Note($this->fake, 'This is a note', '');
+    $intro->display();
+
+    $this->fake->assertWritten([
+        '<dim>│</dim> ',
+        '<info>◇</info> <dim>───────────────────╮</dim>',
+        '<dim>│</dim> <dim>                   │</dim>',
+        '<dim>│</dim> <dim>                   │</dim>',
+        '<dim>│</dim> <dim> This is a note    │</dim>',
+        '<dim>│</dim> <dim>                   │</dim>',
+        '<dim>│</dim> <dim>                   │</dim>',
+        '<dim>├────────────────────╯</dim>',
+    ]);
+});
+
+
+test('can write a note and wrap longer text', function () {
+    $intro = new Note(
+        $this->fake,
+        'This is a note and it is much longer it is so long in fact that it will be forced to wrap and that is that.',
+        ''
+    );
+    $intro->display();
+
+    $this->fake->assertWritten([
+        '<dim>│</dim> ',
+        '<info>◇</info> <dim>───────────────────────────────────────────────────────────────╮</dim>',
+        '<dim>│</dim> <dim>                                                               │</dim>',
+        '<dim>│</dim> <dim>                                                               │</dim>',
+        '<dim>│</dim> <dim> This is a note and it is much longer it is so long in fact    │</dim>',
+        '<dim>│</dim> <dim> that it will be forced to wrap and that is that.              │</dim>',
+        '<dim>│</dim> <dim>                                                               │</dim>',
+        '<dim>│</dim> <dim>                                                               │</dim>',
+        '<dim>├────────────────────────────────────────────────────────────────╯</dim>',
+    ]);
 });
