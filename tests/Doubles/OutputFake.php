@@ -85,7 +85,11 @@ class OutputFake implements OutputInterface
             $messages = [$messages];
         }
 
-        // ray($messages, $this->written);
+        // ray(
+        //     $messages,
+        //     $this->written,
+        //     '[' . PHP_EOL . collect($this->written)->map(fn ($w) => "'" . $w . "'")->join(',' . PHP_EOL) . PHP_EOL . ']'
+        // );
 
         Assert::assertEquals($messages, $this->written);
     }
