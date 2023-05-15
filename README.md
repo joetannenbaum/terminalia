@@ -70,25 +70,25 @@ $password = $this->termAsk(
 The `termChoice` method prompts the user to select one or more items from a list of choices. It accepts the following arguments:
 
 -   `question` (string): The question to ask the user
--   `items` (array|`Collection`|`Helpers\Choices`): An array of choices to display to the user
--   `multiple` (bool): Whether or not to allow the user to select multiple items
+-   `choices` (array|`Collection`|`Helpers\Choices`): An array of choices to display to the user
+-   `multiple` (bool): Whether or not to allow the user to select multiple choices
 -   `rules` (string|array): An array of validation rules to apply to the response
 -   `filterable` (bool): Whether or not to allow the user to filter the choices
--   `minFilterLength` (int, default is `5`): The minimum number of items in the list before filtering is enabled
+-   `minFilterLength` (int, default is `5`): The minimum number of choices in the list before filtering is enabled
 -   `default` (string|array): The default value(s)
 
-If `multiple` is `true` and you pass a `Collection` as the `items` argument, the `items` will be returned as a `Collection` as well, otherwise an array will be returned.
+If `multiple` is `true` and you pass a `Collection` as the `choices` argument, the `choices` will be returned as a `Collection` as well, otherwise an array will be returned.
 
 ```php
 $answer = $this->termChoice(
     question: 'What is your favorite color?',
-    items: ['red', 'green', 'blue'],
+    choices: ['red', 'green', 'blue'],
     rules: ['required'],
 );
 
 $favoriteThings = $this->termChoice(
     question: 'Which are your favorite things:',
-    items: [
+    choices: [
         'raindrops on roses',
         'whiskers on kittens',
         'bright copper kettles',
@@ -106,7 +106,7 @@ $favoriteThings = $this->termChoice(
 );
 ```
 
-Instead of just passing a simple array as the `items` argument, you can choose to pass in a nested array or collection using the `Choices` helper. This allows you to specify a label and a value for each item in the list. The label will be displayed to the user, and the value(s) will be returned when the user selects the item.
+Instead of just passing a simple array as the `choices` argument, you can choose to pass in a nested array or collection using the `Choices` helper. This allows you to specify a label and a value for each item in the list. The label will be displayed to the user, and the value(s) will be returned when the user selects the item.
 
 ```php
 use Terminalia\Helpers\Choices;
@@ -116,25 +116,25 @@ $users = User::all();
 // Choices will display the user's name and return a User model
 $user = $this->termChoice(
     question: 'Which user would you like to edit?',
-    items: Choices::from($users, 'name'),
+    choices: Choices::from($users, 'name'),
 );
 
 // Choices will display the user's name and return the user ID
 $user = $this->termChoice(
     question: 'Which user would you like to edit?',
-    items: Choices::from($users, 'name', 'id'),
+    choices: Choices::from($users, 'name', 'id'),
 );
 
 // Choices will be displayed with the user's full name, will return a User model
 $user = $this->termChoice(
     question: 'Which user would you like to edit?',
-    items: Choices::from($users, fn($user) => "{$user->firstName} {$user->lastName}"),
+    choices: Choices::from($users, fn($user) => "{$user->firstName} {$user->lastName}"),
 );
 
 // Choices will be displayed with the user's full name, will return the user ID
 $user = $this->termChoice(
     question: 'Which user would you like to edit?',
-    items: Choices::from(
+    choices: Choices::from(
         $users,
         fn($user) => "{$user->firstName} {$user->lastName}",
         fn($user) => $user->id,
