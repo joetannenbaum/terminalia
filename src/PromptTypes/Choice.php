@@ -40,7 +40,7 @@ class Choice
     public function __construct(
         protected OutputInterface $output,
         protected string $question,
-        protected Choices $items,
+        protected Choices $choices,
         protected string|iterable $default = [],
         protected $inputStream = null,
     ) {
@@ -48,9 +48,9 @@ class Choice
         $this->initCursor();
         $this->registerStyles();
 
-        $this->displayedItems = $this->items->choices();
+        $this->displayedItems = $this->choices->choices();
 
-        $this->selected = $this->items->getSelectedFromDefault($default);
+        $this->selected = $this->choices->getSelectedFromDefault($default);
     }
 
     public function setMultiple(bool $multiple = true): self
@@ -86,18 +86,18 @@ class Choice
 
         $this->clearCurrentOutput();
         $this->writeAnsweredBlock(
-            $this->items->value($this->selected)->join(', ')
+            $this->choices->value($this->selected)->join(', ')
         );
 
         $this->cursor->show();
 
-        $selectedValues = $this->items->value($this->selected);
+        $selectedValues = $this->choices->value($this->selected);
 
         if (!$this->multiple) {
             return $selectedValues->first();
         }
 
-        return $this->items->returnAsArray() ? $selectedValues->toArray() : $selectedValues;
+        return $this->choices->returnAsArray() ? $selectedValues->toArray() : $selectedValues;
     }
 
     public function onCancel(string $message = 'Canceled'): void
@@ -110,7 +110,7 @@ class Choice
         if ($this->selected->count() > 0) {
             $this->writeBlock(
                 $this->dim(
-                    $this->selected->map(fn ($i) => $this->items->choices()->get($i))->join(', '),
+                    $this->selected->map(fn ($i) => $this->choices->choices()->get($i))->join(', '),
                 ),
             );
         }
@@ -146,12 +146,12 @@ class Choice
     protected function setDisplayedItems(): void
     {
         if ($this->query === '') {
-            $this->displayedItems = $this->items->choices();
+            $this->displayedItems = $this->choices->choices();
 
             return;
         }
 
-        $this->displayedItems = $this->items->choices()->filter(
+        $this->displayedItems = $this->choices->choices()->filter(
             fn ($item) => str_contains(strtolower($item), strtolower($this->query))
         );
     }

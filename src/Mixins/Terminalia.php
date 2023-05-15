@@ -20,7 +20,7 @@ class Terminalia
     {
         return function (
             string $question,
-            array|Choices|Collection $items,
+            array|Choices|Collection $choices,
             $default = null,
             $multiple = false,
             $rules = null,
@@ -30,7 +30,7 @@ class Terminalia
             $helper = new Choice(
                 output: $this->output,
                 question: $question,
-                items: $items instanceof Choices ? $items : Choices::from($items),
+                choices: $choices instanceof Choices ? $choices : Choices::from($choices),
                 default: $default ?? [],
             );
 
@@ -42,7 +42,7 @@ class Terminalia
                 $helper->setMultiple();
             }
 
-            if ($filterable && count($items) >= $minFilterLength) {
+            if ($filterable && count($choices) >= $minFilterLength) {
                 $helper->setFilterable();
             }
 
