@@ -86,7 +86,7 @@ class Choice
 
         $this->clearCurrentOutput();
         $this->writeAnsweredBlock(
-            $this->selected->map(fn ($i) => $this->items[$i])->join(', ')
+            $this->items->value($this->selected)->join(', ')
         );
 
         $this->cursor->show();
