@@ -124,6 +124,10 @@ class Choice
     {
         $listener = $this->inputListener();
 
+        $listener->on(' ', function () {
+            $this->setSelected();
+        });
+
         if ($this->filterable) {
             $this->registerFilterListeners($listener);
         }
@@ -160,10 +164,6 @@ class Choice
 
         $listener->on([ControlSequence::DOWN, ControlSequence::RIGHT], function () {
             $this->setRelativeFocusedIndex(1);
-        });
-
-        $listener->on(' ', function () {
-            $this->setSelected();
         });
 
         $listener->on(TerminalEvent::EXIT, function () {
