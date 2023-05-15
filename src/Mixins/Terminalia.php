@@ -42,7 +42,7 @@ class Terminalia
                 $helper->setMultiple();
             }
 
-            if ($filterable && count($choices) >= $minFilterLength) {
+            if ($filterable && $choices->choices()->count() >= $minFilterLength) {
                 $helper->setFilterable();
             }
 
