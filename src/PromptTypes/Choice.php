@@ -299,6 +299,10 @@ class Choice
             }
 
             $this->writeBlock($this->active('>') . " {$this->query}");
+
+            if ($this->displayedItems->count() === 0) {
+                $this->writeBlock($this->dim('No results'));
+            }
         }
 
         [$selectedSymbol, $unselectedSymbol] = $this->multiple
