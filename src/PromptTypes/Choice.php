@@ -201,6 +201,13 @@ class Choice
                     $this->writeChoices();
                     $filterListener->stop();
                     $defaultListener->listen();
+                } elseif (!$this->multiple) {
+                    $this->setSelected();
+                    $this->setQuery('');
+                    $this->filtering = false;
+                    $this->writeChoices();
+                    $filterListener->stop();
+                    $defaultListener->listen();
                 } else {
                     $this->setSelected();
                     $this->setQuery('');
