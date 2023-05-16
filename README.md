@@ -140,6 +140,20 @@ $user = $this->termChoice(
         fn($user) => $user->id,
     ),
 );
+
+// Defaults will be determined by the display value when no return value is specified
+$user = $this->termChoice(
+    question: 'Which user would you like to edit?',
+    choices: Choices::from($users, 'name'),
+    default: 'Joe',
+);
+
+// Defaults will be determined by the return value if it is specified
+$user = $this->termChoice(
+    question: 'Which user would you like to edit?',
+    choices: Choices::from($users, 'name', 'id'),
+    default: 123,
+);
 ```
 
 ### `termConfirm`

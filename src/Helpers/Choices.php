@@ -62,9 +62,13 @@ class Choices
         return $this->choices()->only($indexes);
     }
 
-    public function getSelectedFromDefault(iterable|string $default): Collection
+    public function getSelectedIndexesFromDefault(iterable|string $default): Collection
     {
         $default = collect(is_array($default) ? $default : [$default]);
+
+        if ($this->returnKey === null) {
+            return $this->choices()->filter(fn ($i) => $default->contains($i))->keys();
+        }
 
         return $this->value($this->items->keys())->filter(fn ($i) => $default->contains($i))->keys();
     }

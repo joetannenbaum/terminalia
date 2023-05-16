@@ -5,7 +5,8 @@
     "require-dev": {
         "tightenco/duster": "^2.0",
         "pestphp/pest": "^2.6",
-        "mockery/mockery": "^1.5"
+        "mockery/mockery": "^1.5",
+        "spatie/ray": "^1.37"
     },
     "license": "MIT",
     "autoload": {

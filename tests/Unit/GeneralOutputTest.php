@@ -84,7 +84,6 @@ test('can write a note without a title', function () {
     ]);
 });
 
-
 test('can write a note and wrap longer text', function () {
     $intro = new Note(
         $this->fake,

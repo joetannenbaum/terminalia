@@ -50,7 +50,7 @@ class Choice
 
         $this->displayedItems = $this->choices->choices();
 
-        $this->selected = $this->choices->getSelectedFromDefault($default);
+        $this->selected = $this->choices->getSelectedIndexesFromDefault($default);
     }
 
     public function setMultiple(bool $multiple = true): self
