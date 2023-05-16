@@ -27,10 +27,12 @@ class Terminalia
             $filterable = false,
             $minFilterLength = 5,
         ) {
+            $choices = $choices instanceof Choices ? $choices : Choices::from($choices);
+
             $helper = new Choice(
                 output: $this->output,
                 question: $question,
-                choices: $choices instanceof Choices ? $choices : Choices::from($choices),
+                choices: $choices,
                 default: $default ?? [],
             );
 
