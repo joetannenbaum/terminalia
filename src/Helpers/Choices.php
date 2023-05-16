@@ -57,6 +57,11 @@ class Choices
         return $this->returnAsArray;
     }
 
+    public function getSelectedDisplay(Collection $indexes): Collection
+    {
+        return $this->choices()->only($indexes);
+    }
+
     public function getSelectedFromDefault(iterable|string $default): Collection
     {
         $default = collect(is_array($default) ? $default : [$default]);
