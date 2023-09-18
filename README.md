@@ -1,5 +1,8 @@
 ![Terminalia](images/terminalia.jpg)
 
+> [!IMPORTANT]
+> Hey! This was a fun project and I learned a lot. It's not the most stable though. I would recommend using [Laravel Prompts][https://github.com/laravel/prompts]. It gets the job done (better) and is well tested and stable.
+
 The UX of [Clack](https://github.com/natemoo-re/clack), the DX of [Laravel](https://laravel.com) for your Artisan commands.
 
 -   [Features](#features)
